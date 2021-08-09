@@ -1,0 +1,38 @@
+<idea-plugin>
+    <id>org.example.kara-plugin</id>
+    <name>Kara Language Support</name>
+    <vendor email="whatltay@gmail.com" url="https://desgroup.me">Desgroup</vendor>
+
+    <description><![CDATA[
+    Support for the Kara programming language.
+    ]]></description>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType
+                name="Kara File"
+                implementationClass="me.desgroup.kara.KaraFileType"
+                fieldName="INSTANCE"
+                language="Kara"
+                extensions="kara"
+        />
+        <lang.parserDefinition
+                language="Kara"
+                implementationClass="me.desgroup.kara.KaraParserDefinition"
+        />
+        <lang.syntaxHighlighterFactory
+                language="Kara"
+                implementationClass="me.desgroup.kara.KaraSyntaxHighlighterFactory"
+        />
+        <colorSettingsPage
+                implementation="me.desgroup.kara.KaraColorSettingsPage"
+        />
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
