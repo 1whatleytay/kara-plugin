@@ -51,7 +51,7 @@ public class KaraVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitExpressionEnd(@NotNull KaraExpressionEnd o) {
+  public void visitExpressionGrouping(@NotNull KaraExpressionGrouping o) {
     visitPsiElement(o);
   }
 
@@ -147,6 +147,10 @@ public class KaraVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitSlash(@NotNull KaraSlash o) {
+    visitPsiElement(o);
+  }
+
   public void visitTernary(@NotNull KaraTernary o) {
     visitPsiElement(o);
   }
@@ -188,6 +192,10 @@ public class KaraVisitor extends PsiElementVisitor {
   }
 
   public void visitTypenameArraySpecUnbounded(@NotNull KaraTypenameArraySpecUnbounded o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTypenameArraySpecUnboundedSized(@NotNull KaraTypenameArraySpecUnboundedSized o) {
     visitPsiElement(o);
   }
 

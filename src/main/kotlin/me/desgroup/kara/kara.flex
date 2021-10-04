@@ -90,6 +90,7 @@ HARD = [\s\:\;\,\.\{\}\+\-\=\/\\\@\#\$\%\^\&\|\*\(\)\!\?\<\>\~\[\]\"\'(<<EOF>>)]
       ">" { return KaraTypes.OP_GREATER; }
       "<" { return KaraTypes.OP_LESSER; }
       "!" { return KaraTypes.OP_EXCLAM; }
+      "??" { return KaraTypes.OP_FALLBACK; }
       "?" { return KaraTypes.OP_QUESTION; }
       "&&" { return KaraTypes.OP_ANDAND; }
       "||" { return KaraTypes.OP_OROR; }
@@ -100,6 +101,10 @@ HARD = [\s\:\;\,\.\{\}\+\-\=\/\\\@\#\$\%\^\&\|\*\(\)\!\?\<\>\~\[\]\"\'(<<EOF>>)]
       "*=" { return KaraTypes.OP_MUL_EQUALS; }
       "/=" { return KaraTypes.OP_DIV_EQUALS; }
       "%=" { return KaraTypes.OP_MOD_EQUALS; }
+      "\\" { return KaraTypes.BACKSLASH; }
+
+      "external" { return KaraTypes.EXTERNAL; }
+      "varargs" { return KaraTypes.VARARGS; }
 
       "\'" { pushState(SINGLE_STRING); return KaraTypes.QUOTE; }
       "\"" { pushState(DOUBLE_STRING); return KaraTypes.QUOTE; }
@@ -116,6 +121,9 @@ HARD = [\s\:\;\,\.\{\}\+\-\=\/\\\@\#\$\%\^\&\|\*\(\)\!\?\<\>\~\[\]\"\'(<<EOF>>)]
       "ulong" / {HARD}  { return KaraTypes.PRIMITIVE; }
       "float" / {HARD}  { return KaraTypes.PRIMITIVE; }
       "double" / {HARD} { return KaraTypes.PRIMITIVE; }
+      "any" / {HARD} { return KaraTypes.PRIMITIVE; }
+      "nothing" / {HARD} { return KaraTypes.PRIMITIVE; }
+      "null" / {HARD} { return KaraTypes.PRIMITIVE; }
 
       "any" { return KaraTypes.ANY; }
       "nothing" { return KaraTypes.NOTHING; }

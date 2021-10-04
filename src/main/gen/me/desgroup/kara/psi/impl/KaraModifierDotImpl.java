@@ -27,4 +27,10 @@ public class KaraModifierDotImpl extends ASTWrapperPsiElement implements KaraMod
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public KaraUnary getUnary() {
+    return findChildByClass(KaraUnary.class);
+  }
+
 }

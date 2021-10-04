@@ -32,23 +32,40 @@ typename-named ::= NAME
 
 typename-array-spec ::=
       typename-array-spec-fixed
-    | typename-array-spec-unbounded
+    | typename-array-spec-unbounded-sized
     | typename-array-spec-enumerable
+    | typename-array-spec-unbounded
 
 typename-array-spec-fixed ::= COLON NUMBER
 typename-array-spec-unbounded ::= COLON
+typename-array-spec-unbounded-sized ::= COLON expression
 typename-array-spec-enumerable ::= COLON COLON
 
-expression ::= expression-part (binary expression-part)? expression-end?
+expression ::= expression-part expression-grouping? (binary expression-part)*
 
 expression-part ::= unary* literal modifier*
-expression-end ::= ternary | as
 
+expression-grouping ::= ternary | as | slash
 ternary ::= OP_QUESTION expression COLON expression
 as ::= AS_DECL typename
+slash ::= BACKSLASH
 
 unary ::= OP_EXCLAM | OP_SUB | OP_AND | OP_AT
-binary ::= OP_ADD | OP_SUB | OP_MUL | OP_DIV | OP_MOD | OP_COMPARE | OP_NCOMPARE | OP_GE | OP_LE | OP_GREATER | OP_LESSER | OP_ANDAND | OP_OROR
+binary ::=
+      OP_ADD
+    | OP_SUB
+    | OP_MUL
+    | OP_DIV
+    | OP_MOD
+    | OP_COMPARE
+    | OP_NCOMPARE
+    | OP_GE
+    | OP_LE
+    | OP_GREATER
+    | OP_LESSER
+    | OP_ANDAND
+    | OP_OROR
+    | OP_FALLBACK
 
 literal ::=
       literal-parens
@@ -72,7 +89,7 @@ modifier ::= modifier-call | modifier-index | modifier-dot
 modifier-call ::= OPEN_BRACE (modifier-call-part COMMA?)* CLOSE_BRACE
 modifier-call-part ::= (NAME COLON)? expression
 modifier-index ::= OPEN_SQUARE expression CLOSE_SQUARE
-modifier-dot ::= DOT NAME
+modifier-dot ::= DOT (unary | NAME)
 
 type ::= TYPE_DECL NAME type-body
 type-body ::= type-alias-body | type-declaration-body
@@ -83,7 +100,7 @@ variable ::= NAME ((typename? OP_EQUALS expression) | typename)
 variable-loose ::= (LET_DECL | VAR_DECL)? variable
 variable-strict ::= (LET_DECL | VAR_DECL) variable
 
-function ::= NAME function-parameters? typename? function-body
+function ::= NAME function-parameters? typename? (EXTERNAL VARARGS?)? function-body
 function-parameters ::= OPEN_BRACE (variable-loose COMMA?)* CLOSE_BRACE
 function-body ::= function-value-body | function-declaration-body
 function-value-body ::= FUNC_DASH expression

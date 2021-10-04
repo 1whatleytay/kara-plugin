@@ -49,7 +49,20 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OP_ADD | OP_SUB | OP_MUL | OP_DIV | OP_MOD | OP_COMPARE | OP_NCOMPARE | OP_GE | OP_LE | OP_GREATER | OP_LESSER | OP_ANDAND | OP_OROR
+  // OP_ADD
+  //     | OP_SUB
+  //     | OP_MUL
+  //     | OP_DIV
+  //     | OP_MOD
+  //     | OP_COMPARE
+  //     | OP_NCOMPARE
+  //     | OP_GE
+  //     | OP_LE
+  //     | OP_GREATER
+  //     | OP_LESSER
+  //     | OP_ANDAND
+  //     | OP_OROR
+  //     | OP_FALLBACK
   public static boolean binary(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "binary")) return false;
     boolean r;
@@ -67,6 +80,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, OP_LESSER);
     if (!r) r = consumeToken(b, OP_ANDAND);
     if (!r) r = consumeToken(b, OP_OROR);
+    if (!r) r = consumeToken(b, OP_FALLBACK);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -252,7 +266,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // expression-part (binary expression-part)? expression-end?
+  // expression-part expression-grouping? (binary expression-part)*
   public static boolean expression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expression")) return false;
     boolean r;
@@ -264,16 +278,27 @@ public class KaraParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (binary expression-part)?
+  // expression-grouping?
   private static boolean expression_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expression_1")) return false;
-    expression_1_0(b, l + 1);
+    expression_grouping(b, l + 1);
+    return true;
+  }
+
+  // (binary expression-part)*
+  private static boolean expression_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "expression_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!expression_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "expression_2", c)) break;
+    }
     return true;
   }
 
   // binary expression-part
-  private static boolean expression_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "expression_1_0")) return false;
+  private static boolean expression_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "expression_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = binary(b, l + 1);
@@ -282,22 +307,15 @@ public class KaraParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // expression-end?
-  private static boolean expression_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "expression_2")) return false;
-    expression_end(b, l + 1);
-    return true;
-  }
-
   /* ********************************************************** */
-  // ternary | as
-  public static boolean expression_end(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "expression_end")) return false;
-    if (!nextTokenIs(b, "<expression end>", AS_DECL, OP_QUESTION)) return false;
+  // ternary | as | slash
+  public static boolean expression_grouping(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "expression_grouping")) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, EXPRESSION_END, "<expression end>");
+    Marker m = enter_section_(b, l, _NONE_, EXPRESSION_GROUPING, "<expression grouping>");
     r = ternary(b, l + 1);
     if (!r) r = as(b, l + 1);
+    if (!r) r = slash(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -338,7 +356,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // NAME function-parameters? typename? function-body
+  // NAME function-parameters? typename? (EXTERNAL VARARGS?)? function-body
   public static boolean function(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "function")) return false;
     if (!nextTokenIs(b, NAME)) return false;
@@ -347,6 +365,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, NAME);
     r = r && function_1(b, l + 1);
     r = r && function_2(b, l + 1);
+    r = r && function_3(b, l + 1);
     r = r && function_body(b, l + 1);
     exit_section_(b, m, FUNCTION, r);
     return r;
@@ -363,6 +382,31 @@ public class KaraParser implements PsiParser, LightPsiParser {
   private static boolean function_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "function_2")) return false;
     typename(b, l + 1);
+    return true;
+  }
+
+  // (EXTERNAL VARARGS?)?
+  private static boolean function_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "function_3")) return false;
+    function_3_0(b, l + 1);
+    return true;
+  }
+
+  // EXTERNAL VARARGS?
+  private static boolean function_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "function_3_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, EXTERNAL);
+    r = r && function_3_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // VARARGS?
+  private static boolean function_3_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "function_3_0_1")) return false;
+    consumeToken(b, VARARGS);
     return true;
   }
 
@@ -779,14 +823,24 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DOT NAME
+  // DOT (unary | NAME)
   public static boolean modifier_dot(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "modifier_dot")) return false;
     if (!nextTokenIs(b, DOT)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, DOT, NAME);
+    r = consumeToken(b, DOT);
+    r = r && modifier_dot_1(b, l + 1);
     exit_section_(b, m, MODIFIER_DOT, r);
+    return r;
+  }
+
+  // unary | NAME
+  private static boolean modifier_dot_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "modifier_dot_1")) return false;
+    boolean r;
+    r = unary(b, l + 1);
+    if (!r) r = consumeToken(b, NAME);
     return r;
   }
 
@@ -825,6 +879,18 @@ public class KaraParser implements PsiParser, LightPsiParser {
     if (!r) r = variable_strict(b, l + 1);
     if (!r) r = function_loose(b, l + 1);
     if (!r) r = consumeToken(b, COMMENT);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // BACKSLASH
+  public static boolean slash(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "slash")) return false;
+    if (!nextTokenIs(b, BACKSLASH)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, BACKSLASH);
+    exit_section_(b, m, SLASH, r);
     return r;
   }
 
@@ -968,16 +1034,18 @@ public class KaraParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // typename-array-spec-fixed
-  //     | typename-array-spec-unbounded
+  //     | typename-array-spec-unbounded-sized
   //     | typename-array-spec-enumerable
+  //     | typename-array-spec-unbounded
   public static boolean typename_array_spec(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename_array_spec")) return false;
     if (!nextTokenIs(b, COLON)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = typename_array_spec_fixed(b, l + 1);
-    if (!r) r = typename_array_spec_unbounded(b, l + 1);
+    if (!r) r = typename_array_spec_unbounded_sized(b, l + 1);
     if (!r) r = typename_array_spec_enumerable(b, l + 1);
+    if (!r) r = typename_array_spec_unbounded(b, l + 1);
     exit_section_(b, m, TYPENAME_ARRAY_SPEC, r);
     return r;
   }
@@ -1015,6 +1083,19 @@ public class KaraParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, COLON);
     exit_section_(b, m, TYPENAME_ARRAY_SPEC_UNBOUNDED, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // COLON expression
+  public static boolean typename_array_spec_unbounded_sized(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typename_array_spec_unbounded_sized")) return false;
+    if (!nextTokenIs(b, COLON)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COLON);
+    r = r && expression(b, l + 1);
+    exit_section_(b, m, TYPENAME_ARRAY_SPEC_UNBOUNDED_SIZED, r);
     return r;
   }
 

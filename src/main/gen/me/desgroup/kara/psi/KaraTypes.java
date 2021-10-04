@@ -19,7 +19,7 @@ public interface KaraTypes {
   IElementType BODY_LINE = new KaraElement("BODY_LINE");
   IElementType BODY_STATEMENT = new KaraElement("BODY_STATEMENT");
   IElementType EXPRESSION = new KaraElement("EXPRESSION");
-  IElementType EXPRESSION_END = new KaraElement("EXPRESSION_END");
+  IElementType EXPRESSION_GROUPING = new KaraElement("EXPRESSION_GROUPING");
   IElementType EXPRESSION_PART = new KaraElement("EXPRESSION_PART");
   IElementType FUNCTION = new KaraElement("FUNCTION");
   IElementType FUNCTION_BODY = new KaraElement("FUNCTION_BODY");
@@ -43,6 +43,7 @@ public interface KaraTypes {
   IElementType MODIFIER_CALL_PART = new KaraElement("MODIFIER_CALL_PART");
   IElementType MODIFIER_DOT = new KaraElement("MODIFIER_DOT");
   IElementType MODIFIER_INDEX = new KaraElement("MODIFIER_INDEX");
+  IElementType SLASH = new KaraElement("SLASH");
   IElementType TERNARY = new KaraElement("TERNARY");
   IElementType TYPE = new KaraElement("TYPE");
   IElementType TYPENAME = new KaraElement("TYPENAME");
@@ -51,6 +52,7 @@ public interface KaraTypes {
   IElementType TYPENAME_ARRAY_SPEC_ENUMERABLE = new KaraElement("TYPENAME_ARRAY_SPEC_ENUMERABLE");
   IElementType TYPENAME_ARRAY_SPEC_FIXED = new KaraElement("TYPENAME_ARRAY_SPEC_FIXED");
   IElementType TYPENAME_ARRAY_SPEC_UNBOUNDED = new KaraElement("TYPENAME_ARRAY_SPEC_UNBOUNDED");
+  IElementType TYPENAME_ARRAY_SPEC_UNBOUNDED_SIZED = new KaraElement("TYPENAME_ARRAY_SPEC_UNBOUNDED_SIZED");
   IElementType TYPENAME_NAMED = new KaraElement("TYPENAME_NAMED");
   IElementType TYPENAME_OPTIONAL = new KaraElement("TYPENAME_OPTIONAL");
   IElementType TYPENAME_PRIMITIVE = new KaraElement("TYPENAME_PRIMITIVE");
@@ -65,6 +67,7 @@ public interface KaraTypes {
 
   IElementType ANY = new KaraToken("ANY");
   IElementType AS_DECL = new KaraToken("AS_DECL");
+  IElementType BACKSLASH = new KaraToken("BACKSLASH");
   IElementType BLOCK_DECL = new KaraToken("BLOCK_DECL");
   IElementType BREAK_DECL = new KaraToken("BREAK_DECL");
   IElementType CLOSE_BODY = new KaraToken("CLOSE_BODY");
@@ -76,6 +79,7 @@ public interface KaraTypes {
   IElementType CONTINUE_DECL = new KaraToken("CONTINUE_DECL");
   IElementType DOT = new KaraToken("DOT");
   IElementType EXIT_DECL = new KaraToken("EXIT_DECL");
+  IElementType EXTERNAL = new KaraToken("EXTERNAL");
   IElementType FALSE = new KaraToken("FALSE");
   IElementType FOR_DECL = new KaraToken("FOR_DECL");
   IElementType FUNC_DASH = new KaraToken("FUNC_DASH");
@@ -101,6 +105,7 @@ public interface KaraTypes {
   IElementType OP_DIV_EQUALS = new KaraToken("OP_DIV_EQUALS");
   IElementType OP_EQUALS = new KaraToken("OP_EQUALS");
   IElementType OP_EXCLAM = new KaraToken("OP_EXCLAM");
+  IElementType OP_FALLBACK = new KaraToken("OP_FALLBACK");
   IElementType OP_GE = new KaraToken("OP_GE");
   IElementType OP_GREATER = new KaraToken("OP_GREATER");
   IElementType OP_LE = new KaraToken("OP_LE");
@@ -122,6 +127,7 @@ public interface KaraTypes {
   IElementType STRING_PART = new KaraToken("STRING_PART");
   IElementType TRUE = new KaraToken("TRUE");
   IElementType TYPE_DECL = new KaraToken("TYPE_DECL");
+  IElementType VARARGS = new KaraToken("VARARGS");
   IElementType VAR_DECL = new KaraToken("VAR_DECL");
 
   class Factory {
@@ -160,8 +166,8 @@ public interface KaraTypes {
       else if (type == EXPRESSION) {
         return new KaraExpressionImpl(node);
       }
-      else if (type == EXPRESSION_END) {
-        return new KaraExpressionEndImpl(node);
+      else if (type == EXPRESSION_GROUPING) {
+        return new KaraExpressionGroupingImpl(node);
       }
       else if (type == EXPRESSION_PART) {
         return new KaraExpressionPartImpl(node);
@@ -232,6 +238,9 @@ public interface KaraTypes {
       else if (type == MODIFIER_INDEX) {
         return new KaraModifierIndexImpl(node);
       }
+      else if (type == SLASH) {
+        return new KaraSlashImpl(node);
+      }
       else if (type == TERNARY) {
         return new KaraTernaryImpl(node);
       }
@@ -255,6 +264,9 @@ public interface KaraTypes {
       }
       else if (type == TYPENAME_ARRAY_SPEC_UNBOUNDED) {
         return new KaraTypenameArraySpecUnboundedImpl(node);
+      }
+      else if (type == TYPENAME_ARRAY_SPEC_UNBOUNDED_SIZED) {
+        return new KaraTypenameArraySpecUnboundedSizedImpl(node);
       }
       else if (type == TYPENAME_NAMED) {
         return new KaraTypenameNamedImpl(node);

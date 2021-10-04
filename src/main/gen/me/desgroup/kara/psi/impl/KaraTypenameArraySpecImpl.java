@@ -45,4 +45,10 @@ public class KaraTypenameArraySpecImpl extends ASTWrapperPsiElement implements K
     return findChildByClass(KaraTypenameArraySpecUnbounded.class);
   }
 
+  @Override
+  @Nullable
+  public KaraTypenameArraySpecUnboundedSized getTypenameArraySpecUnboundedSized() {
+    return findChildByClass(KaraTypenameArraySpecUnboundedSized.class);
+  }
+
 }

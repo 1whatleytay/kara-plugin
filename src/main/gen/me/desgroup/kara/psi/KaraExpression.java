@@ -7,11 +7,11 @@ import com.intellij.psi.PsiElement;
 
 public interface KaraExpression extends PsiElement {
 
-  @Nullable
-  KaraBinary getBinary();
+  @NotNull
+  List<KaraBinary> getBinaryList();
 
   @Nullable
-  KaraExpressionEnd getExpressionEnd();
+  KaraExpressionGrouping getExpressionGrouping();
 
   @NotNull
   List<KaraExpressionPart> getExpressionPartList();

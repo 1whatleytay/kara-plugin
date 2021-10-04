@@ -5,9 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface KaraModifierDot extends PsiElement {
+public interface KaraExpressionGrouping extends PsiElement {
 
   @Nullable
-  KaraUnary getUnary();
+  KaraAs getAs();
+
+  @Nullable
+  KaraSlash getSlash();
+
+  @Nullable
+  KaraTernary getTernary();
 
 }

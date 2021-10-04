@@ -16,4 +16,7 @@ public interface KaraTypenameArraySpec extends PsiElement {
   @Nullable
   KaraTypenameArraySpecUnbounded getTypenameArraySpecUnbounded();
 
+  @Nullable
+  KaraTypenameArraySpecUnboundedSized getTypenameArraySpecUnboundedSized();
+
 }

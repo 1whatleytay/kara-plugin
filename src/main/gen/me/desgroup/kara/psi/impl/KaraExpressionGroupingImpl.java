@@ -11,14 +11,14 @@ import static me.desgroup.kara.psi.KaraTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import me.desgroup.kara.psi.*;
 
-public class KaraExpressionImpl extends ASTWrapperPsiElement implements KaraExpression {
+public class KaraExpressionGroupingImpl extends ASTWrapperPsiElement implements KaraExpressionGrouping {
 
-  public KaraExpressionImpl(@NotNull ASTNode node) {
+  public KaraExpressionGroupingImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull KaraVisitor visitor) {
-    visitor.visitExpression(this);
+    visitor.visitExpressionGrouping(this);
   }
 
   @Override
@@ -28,21 +28,21 @@ public class KaraExpressionImpl extends ASTWrapperPsiElement implements KaraExpr
   }
 
   @Override
-  @NotNull
-  public List<KaraBinary> getBinaryList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, KaraBinary.class);
+  @Nullable
+  public KaraAs getAs() {
+    return findChildByClass(KaraAs.class);
   }
 
   @Override
   @Nullable
-  public KaraExpressionGrouping getExpressionGrouping() {
-    return findChildByClass(KaraExpressionGrouping.class);
+  public KaraSlash getSlash() {
+    return findChildByClass(KaraSlash.class);
   }
 
   @Override
-  @NotNull
-  public List<KaraExpressionPart> getExpressionPartList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, KaraExpressionPart.class);
+  @Nullable
+  public KaraTernary getTernary() {
+    return findChildByClass(KaraTernary.class);
   }
 
 }
