@@ -11,14 +11,14 @@ import static me.desgroup.kara.psi.KaraTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import me.desgroup.kara.psi.*;
 
-public class KaraBodyForImpl extends ASTWrapperPsiElement implements KaraBodyFor {
+public class KaraCodeImpl extends ASTWrapperPsiElement implements KaraCode {
 
-  public KaraBodyForImpl(@NotNull ASTNode node) {
+  public KaraCodeImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull KaraVisitor visitor) {
-    visitor.visitBodyFor(this);
+    visitor.visitCode(this);
   }
 
   @Override
@@ -29,14 +29,8 @@ public class KaraBodyForImpl extends ASTWrapperPsiElement implements KaraBodyFor
 
   @Override
   @NotNull
-  public KaraCode getCode() {
-    return findNotNullChildByClass(KaraCode.class);
-  }
-
-  @Override
-  @Nullable
-  public KaraExpression getExpression() {
-    return findChildByClass(KaraExpression.class);
+  public KaraBody getBody() {
+    return findNotNullChildByClass(KaraBody.class);
   }
 
 }

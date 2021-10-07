@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface KaraBodyIf extends PsiElement {
 
   @NotNull
-  KaraBody getBody();
+  KaraCode getCode();
 
   @NotNull
   KaraExpression getExpression();

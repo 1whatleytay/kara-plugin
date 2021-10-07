@@ -152,16 +152,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (BLOCK_DECL | EXIT_DECL) OPEN_BODY body CLOSE_BODY
+  // (BLOCK_DECL | EXIT_DECL) code
   public static boolean body_block(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "body_block")) return false;
     if (!nextTokenIs(b, "<body block>", BLOCK_DECL, EXIT_DECL)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, BODY_BLOCK, "<body block>");
     r = body_block_0(b, l + 1);
-    r = r && consumeToken(b, OPEN_BODY);
-    r = r && body(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BODY);
+    r = r && code(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -176,7 +174,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FOR_DECL expression? OPEN_BODY body CLOSE_BODY
+  // FOR_DECL expression? code
   public static boolean body_for(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "body_for")) return false;
     if (!nextTokenIs(b, FOR_DECL)) return false;
@@ -184,9 +182,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, FOR_DECL);
     r = r && body_for_1(b, l + 1);
-    r = r && consumeToken(b, OPEN_BODY);
-    r = r && body(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BODY);
+    r = r && code(b, l + 1);
     exit_section_(b, m, BODY_FOR, r);
     return r;
   }
@@ -199,7 +195,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IF_DECL expression OPEN_BODY body CLOSE_BODY
+  // IF_DECL expression code
   public static boolean body_if(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "body_if")) return false;
     if (!nextTokenIs(b, IF_DECL)) return false;
@@ -207,9 +203,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, IF_DECL);
     r = r && expression(b, l + 1);
-    r = r && consumeToken(b, OPEN_BODY);
-    r = r && body(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BODY);
+    r = r && code(b, l + 1);
     exit_section_(b, m, BODY_IF, r);
     return r;
   }
@@ -262,6 +256,20 @@ public class KaraParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, RETURN_DECL);
     r = r && expression(b, l + 1);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // OPEN_BODY body CLOSE_BODY
+  public static boolean code(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "code")) return false;
+    if (!nextTokenIs(b, OPEN_BODY)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, OPEN_BODY);
+    r = r && body(b, l + 1);
+    r = r && consumeToken(b, CLOSE_BODY);
+    exit_section_(b, m, CODE, r);
     return r;
   }
 
@@ -424,15 +432,13 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BODY body CLOSE_BODY
+  // code
   public static boolean function_declaration_body(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "function_declaration_body")) return false;
     if (!nextTokenIs(b, OPEN_BODY)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, OPEN_BODY);
-    r = r && body(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BODY);
+    r = code(b, l + 1);
     exit_section_(b, m, FUNCTION_DECLARATION_BODY, r);
     return r;
   }

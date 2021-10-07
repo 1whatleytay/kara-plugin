@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface KaraFunctionDeclarationBody extends PsiElement {
 
   @NotNull
-  KaraBody getBody();
+  KaraCode getCode();
 
 }

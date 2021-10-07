@@ -18,6 +18,7 @@ public interface KaraTypes {
   IElementType BODY_IF = new KaraElement("BODY_IF");
   IElementType BODY_LINE = new KaraElement("BODY_LINE");
   IElementType BODY_STATEMENT = new KaraElement("BODY_STATEMENT");
+  IElementType CODE = new KaraElement("CODE");
   IElementType EXPRESSION = new KaraElement("EXPRESSION");
   IElementType EXPRESSION_GROUPING = new KaraElement("EXPRESSION_GROUPING");
   IElementType EXPRESSION_PART = new KaraElement("EXPRESSION_PART");
@@ -162,6 +163,9 @@ public interface KaraTypes {
       }
       else if (type == BODY_STATEMENT) {
         return new KaraBodyStatementImpl(node);
+      }
+      else if (type == CODE) {
+        return new KaraCodeImpl(node);
       }
       else if (type == EXPRESSION) {
         return new KaraExpressionImpl(node);

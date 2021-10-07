@@ -47,6 +47,10 @@ public class KaraVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCode(@NotNull KaraCode o) {
+    visitPsiElement(o);
+  }
+
   public void visitExpression(@NotNull KaraExpression o) {
     visitPsiElement(o);
   }

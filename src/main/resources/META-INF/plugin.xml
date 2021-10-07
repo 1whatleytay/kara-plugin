@@ -27,6 +27,10 @@
                 language="Kara"
                 implementationClass="me.desgroup.kara.KaraSyntaxHighlighterFactory"
         />
+        <lang.formatter
+                language="Kara"
+                implementationClass="me.desgroup.kara.KaraFormattingModelBuilder"
+        />
         <colorSettingsPage
                 implementation="me.desgroup.kara.KaraColorSettingsPage"
         />

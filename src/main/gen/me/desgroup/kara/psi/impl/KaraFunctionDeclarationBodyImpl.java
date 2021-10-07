@@ -29,8 +29,8 @@ public class KaraFunctionDeclarationBodyImpl extends ASTWrapperPsiElement implem
 
   @Override
   @NotNull
-  public KaraBody getBody() {
-    return findNotNullChildByClass(KaraBody.class);
+  public KaraCode getCode() {
+    return findNotNullChildByClass(KaraCode.class);
   }
 
 }

@@ -104,7 +104,7 @@ function ::= NAME function-parameters? typename? (EXTERNAL VARARGS?)? function-b
 function-parameters ::= OPEN_BRACE (variable-loose COMMA?)* CLOSE_BRACE
 function-body ::= function-value-body | function-declaration-body
 function-value-body ::= FUNC_DASH expression
-function-declaration-body ::= OPEN_BODY body CLOSE_BODY
+function-declaration-body ::= code
 function-loose ::= FUNC_DECL? function
 function-strict ::= FUNC_DECL function
 
@@ -120,9 +120,9 @@ body-line ::=
     | function-strict
     | COMMENT
 
-body-if ::= IF_DECL expression OPEN_BODY body CLOSE_BODY
-body-for ::= FOR_DECL expression? OPEN_BODY body CLOSE_BODY
-body-block ::= (BLOCK_DECL | EXIT_DECL) OPEN_BODY body CLOSE_BODY
+body-if ::= IF_DECL expression code
+body-for ::= FOR_DECL expression? code
+body-block ::= (BLOCK_DECL | EXIT_DECL) code
 body-assign ::= expression body-assign-op expression
 body-assign-op ::=
       OP_EQUALS
@@ -132,3 +132,5 @@ body-assign-op ::=
     | OP_DIV_EQUALS
     | OP_MOD_EQUALS
 body-statement ::= (RETURN_DECL expression) | BREAK_DECL | CONTINUE_DECL
+
+code ::= OPEN_BODY body CLOSE_BODY
