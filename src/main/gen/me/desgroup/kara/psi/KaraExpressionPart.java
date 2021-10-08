@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface KaraExpressionPart extends PsiElement {
 
   @NotNull
+  List<KaraExpressionGrouping> getExpressionGroupingList();
+
+  @NotNull
   KaraLiteral getLiteral();
 
   @NotNull

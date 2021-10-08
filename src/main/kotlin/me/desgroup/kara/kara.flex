@@ -121,13 +121,10 @@ HARD = [\s\:\;\,\.\{\}\+\-\=\/\\\@\#\$\%\^\&\|\*\(\)\!\?\<\>\~\[\]\"\'(<<EOF>>)]
       "ulong" / {HARD}  { return KaraTypes.PRIMITIVE; }
       "float" / {HARD}  { return KaraTypes.PRIMITIVE; }
       "double" / {HARD} { return KaraTypes.PRIMITIVE; }
-      "any" / {HARD} { return KaraTypes.PRIMITIVE; }
-      "nothing" / {HARD} { return KaraTypes.PRIMITIVE; }
-      "null" / {HARD} { return KaraTypes.PRIMITIVE; }
 
-      "any" { return KaraTypes.ANY; }
-      "nothing" { return KaraTypes.NOTHING; }
-      "null" { return KaraTypes.NULL; }
+      "any" / {HARD} { return KaraTypes.ANY; }
+      "nothing" / {HARD} { return KaraTypes.NOTHING; }
+      "null" / {HARD} { return KaraTypes.NULL; }
 
       [:jletterdigit:]+ / {HARD} { return KaraTypes.NAME; }
 

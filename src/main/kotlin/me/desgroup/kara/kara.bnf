@@ -41,9 +41,9 @@ typename-array-spec-unbounded ::= COLON
 typename-array-spec-unbounded-sized ::= COLON expression
 typename-array-spec-enumerable ::= COLON COLON
 
-expression ::= expression-part expression-grouping? (binary expression-part)*
+expression ::= expression-part (binary expression-part)*
 
-expression-part ::= unary* literal modifier*
+expression-part ::= unary* literal (expression-grouping | modifier)*
 
 expression-grouping ::= ternary | as | slash
 ternary ::= OP_QUESTION expression COLON expression

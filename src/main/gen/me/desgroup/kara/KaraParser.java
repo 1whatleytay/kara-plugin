@@ -274,39 +274,31 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // expression-part expression-grouping? (binary expression-part)*
+  // expression-part (binary expression-part)*
   public static boolean expression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expression")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, EXPRESSION, "<expression>");
     r = expression_part(b, l + 1);
     r = r && expression_1(b, l + 1);
-    r = r && expression_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // expression-grouping?
+  // (binary expression-part)*
   private static boolean expression_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expression_1")) return false;
-    expression_grouping(b, l + 1);
-    return true;
-  }
-
-  // (binary expression-part)*
-  private static boolean expression_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "expression_2")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!expression_2_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "expression_2", c)) break;
+      if (!expression_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "expression_1", c)) break;
     }
     return true;
   }
 
   // binary expression-part
-  private static boolean expression_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "expression_2_0")) return false;
+  private static boolean expression_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "expression_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = binary(b, l + 1);
@@ -329,7 +321,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // unary* literal modifier*
+  // unary* literal (expression-grouping | modifier)*
   public static boolean expression_part(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expression_part")) return false;
     boolean r;
@@ -352,15 +344,24 @@ public class KaraParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // modifier*
+  // (expression-grouping | modifier)*
   private static boolean expression_part_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expression_part_2")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!modifier(b, l + 1)) break;
+      if (!expression_part_2_0(b, l + 1)) break;
       if (!empty_element_parsed_guard_(b, "expression_part_2", c)) break;
     }
     return true;
+  }
+
+  // expression-grouping | modifier
+  private static boolean expression_part_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "expression_part_2_0")) return false;
+    boolean r;
+    r = expression_grouping(b, l + 1);
+    if (!r) r = modifier(b, l + 1);
+    return r;
   }
 
   /* ********************************************************** */

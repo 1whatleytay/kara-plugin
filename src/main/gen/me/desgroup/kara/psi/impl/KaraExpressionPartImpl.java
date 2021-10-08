@@ -29,6 +29,12 @@ public class KaraExpressionPartImpl extends ASTWrapperPsiElement implements Kara
 
   @Override
   @NotNull
+  public List<KaraExpressionGrouping> getExpressionGroupingList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, KaraExpressionGrouping.class);
+  }
+
+  @Override
+  @NotNull
   public KaraLiteral getLiteral() {
     return findNotNullChildByClass(KaraLiteral.class);
   }

@@ -10,9 +10,6 @@ public interface KaraExpression extends PsiElement {
   @NotNull
   List<KaraBinary> getBinaryList();
 
-  @Nullable
-  KaraExpressionGrouping getExpressionGrouping();
-
   @NotNull
   List<KaraExpressionPart> getExpressionPartList();
 
