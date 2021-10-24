@@ -28,9 +28,9 @@ public class KaraVariableStrictImpl extends ASTWrapperPsiElement implements Kara
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraVariable getVariable() {
-    return findNotNullChildByClass(KaraVariable.class);
+    return findChildByClass(KaraVariable.class);
   }
 
 }

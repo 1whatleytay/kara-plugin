@@ -7,10 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface KaraBodyIf extends PsiElement {
 
-  @NotNull
+  @Nullable
   KaraCode getCode();
 
-  @NotNull
+  @Nullable
   KaraExpression getExpression();
 
 }

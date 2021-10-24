@@ -28,9 +28,9 @@ public class KaraLiteralNewImpl extends ASTWrapperPsiElement implements KaraLite
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraTypename getTypename() {
-    return findNotNullChildByClass(KaraTypename.class);
+    return findChildByClass(KaraTypename.class);
   }
 
 }

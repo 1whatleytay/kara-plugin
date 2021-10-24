@@ -28,9 +28,9 @@ public class KaraTypeAliasBodyImpl extends ASTWrapperPsiElement implements KaraT
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraTypename getTypename() {
-    return findNotNullChildByClass(KaraTypename.class);
+    return findChildByClass(KaraTypename.class);
   }
 
 }

@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface KaraBodyBlock extends PsiElement {
 
-  @NotNull
+  @Nullable
   KaraCode getCode();
 
 }

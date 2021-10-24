@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface KaraBodyStatement extends PsiElement {
 
   @Nullable
-  KaraExpression getExpression();
+  KaraBodyStatementReturn getBodyStatementReturn();
 
 }

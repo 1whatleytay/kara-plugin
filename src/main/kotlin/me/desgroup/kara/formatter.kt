@@ -50,16 +50,8 @@ class KaraBlock(private val astNode: ASTNode,
         var child = astNode.firstChildNode
 
         val alignsChildren = setOf(
-            KaraTypes.BODY
-        )
-
-        val hasChildren = setOf(
-            KaraTypes.FUNCTION_LOOSE,
-            KaraTypes.FUNCTION_STRICT,
-            KaraTypes.FUNCTION,
-            KaraTypes.FUNCTION_BODY,
-            KaraTypes.FUNCTION_DECLARATION_BODY,
             KaraTypes.BODY,
+            KaraTypes.TYPE_DECLARATION_BODY,
         )
 
         val indent =

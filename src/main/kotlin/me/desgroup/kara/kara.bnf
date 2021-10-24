@@ -15,7 +15,7 @@
 
 root ::= (import|type|variable-strict|function-loose|COMMENT)*
 
-import ::= IMPORT_DECL (OPEN_BRACE NAME CLOSE_BRACE)? literal-string
+import ::= IMPORT_DECL (OPEN_BRACE NAME CLOSE_BRACE)? literal-string {pin=1}
 
 typename ::=
       typename-reference
@@ -23,12 +23,14 @@ typename ::=
     | typename-array
     | typename-primitive
     | typename-named
+    | typename-function
 
-typename-reference ::= (OP_AND | (OP_MUL HINT_SHARED?)) (LET_DECL | VAR_DECL)? typename
-typename-optional ::= (OP_QUESTION | OP_EXCLAM) typename
-typename-array ::= OPEN_SQUARE typename typename-array-spec? CLOSE_SQUARE
+typename-reference ::= (OP_AND | (OP_MUL HINT_SHARED?)) (LET_DECL | VAR_DECL)? typename {pin=1}
+typename-optional ::= (OP_QUESTION | OP_EXCLAM) typename {pin=1}
+typename-array ::= OPEN_SQUARE typename typename-array-spec? CLOSE_SQUARE {pin=1}
 typename-primitive ::= PRIMITIVE | ANY | NOTHING | NULL
 typename-named ::= NAME
+typename-function ::= FUNC_DECL LOCKED_DECL? PTR_DECL? OPEN_BRACE function-parameters CLOSE_BRACE typename {pin=1}
 
 typename-array-spec ::=
       typename-array-spec-fixed
@@ -46,8 +48,8 @@ expression ::= expression-part (binary expression-part)*
 expression-part ::= unary* literal (expression-grouping | modifier)*
 
 expression-grouping ::= ternary | as | slash
-ternary ::= OP_QUESTION expression COLON expression
-as ::= AS_DECL typename
+ternary ::= OP_QUESTION expression COLON expression {pin=1}
+as ::= AS_DECL typename {pin=1}
 slash ::= BACKSLASH
 
 unary ::= OP_EXCLAM | OP_SUB | OP_AND | OP_AT
@@ -76,37 +78,37 @@ literal ::=
     | literal-number
     | literal-new
     | literal-reference
-literal-parens ::= OPEN_BRACE expression CLOSE_BRACE
-literal-array ::= OPEN_SQUARE (expression COMMA?)* CLOSE_SQUARE
-literal-string ::= QUOTE (STRING_PART | STRING_ESCAPE | STRING_INSERT)* QUOTE
+literal-parens ::= OPEN_BRACE expression CLOSE_BRACE {pin=1}
+literal-array ::= OPEN_SQUARE (expression COMMA?)* CLOSE_SQUARE {pin=1}
+literal-string ::= QUOTE (STRING_PART | STRING_ESCAPE | STRING_INSERT)* QUOTE {pin=1}
 literal-special ::= ANY | NOTHING | NULL
 literal-bool ::= TRUE | FALSE
 literal-number ::= NUMBER
-literal-new ::= OP_MUL typename
+literal-new ::= OP_MUL typename {pin=1}
 literal-reference ::= NAME
 
 modifier ::= modifier-call | modifier-index | modifier-dot
-modifier-call ::= OPEN_BRACE (modifier-call-part COMMA?)* CLOSE_BRACE
+modifier-call ::= OPEN_BRACE (modifier-call-part COMMA?)* CLOSE_BRACE {pin=1}
 modifier-call-part ::= (NAME COLON)? expression
-modifier-index ::= OPEN_SQUARE expression CLOSE_SQUARE
-modifier-dot ::= DOT (unary | NAME)
+modifier-index ::= OPEN_SQUARE expression CLOSE_SQUARE {pin=1}
+modifier-dot ::= DOT (unary | NAME) {pin=1}
 
-type ::= TYPE_DECL NAME type-body
+type ::= TYPE_DECL NAME type-body {pin=1}
 type-body ::= type-alias-body | type-declaration-body
-type-alias-body ::= OP_EQUALS typename
-type-declaration-body ::= OPEN_BODY (variable-loose COMMA?)* CLOSE_BODY
+type-alias-body ::= OP_EQUALS typename {pin=1}
+type-declaration-body ::= OPEN_BODY (variable-loose COMMA?)* CLOSE_BODY {pin=1}
 
 variable ::= NAME ((typename? OP_EQUALS expression) | typename)
-variable-loose ::= (LET_DECL | VAR_DECL)? variable
-variable-strict ::= (LET_DECL | VAR_DECL) variable
+variable-loose ::= (LET_DECL | VAR_DECL)? variable {pin="LET_DECL | VAR_DECL"}
+variable-strict ::= (LET_DECL | VAR_DECL) variable {pin=1}
 
 function ::= NAME function-parameters? typename? (EXTERNAL VARARGS?)? function-body
 function-parameters ::= OPEN_BRACE (variable-loose COMMA?)* CLOSE_BRACE
 function-body ::= function-value-body | function-declaration-body
 function-value-body ::= FUNC_DASH expression
 function-declaration-body ::= code
-function-loose ::= FUNC_DECL? function
-function-strict ::= FUNC_DECL function
+function-loose ::= FUNC_DECL? function {pin="FUNC_DECL"}
+function-strict ::= FUNC_DECL function {pin=1}
 
 body ::= (body-line COMMA?)*
 body-line ::=
@@ -120,9 +122,9 @@ body-line ::=
     | function-strict
     | COMMENT
 
-body-if ::= IF_DECL expression code
-body-for ::= FOR_DECL expression? code
-body-block ::= (BLOCK_DECL | EXIT_DECL) code
+body-if ::= IF_DECL expression code {pin=1}
+body-for ::= FOR_DECL expression? code {pin=1}
+body-block ::= (BLOCK_DECL | EXIT_DECL) code {pin=1}
 body-assign ::= expression body-assign-op expression
 body-assign-op ::=
       OP_EQUALS
@@ -131,6 +133,7 @@ body-assign-op ::=
     | OP_MUL_EQUALS
     | OP_DIV_EQUALS
     | OP_MOD_EQUALS
-body-statement ::= (RETURN_DECL expression) | BREAK_DECL | CONTINUE_DECL
+body-statement ::= body-statement-return | BREAK_DECL | CONTINUE_DECL
+body-statement-return ::= RETURN_DECL expression?
 
-code ::= OPEN_BODY body CLOSE_BODY
+code ::= OPEN_BODY body CLOSE_BODY {pin=1}

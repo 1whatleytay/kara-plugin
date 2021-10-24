@@ -28,9 +28,9 @@ public class KaraBodyForImpl extends ASTWrapperPsiElement implements KaraBodyFor
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraCode getCode() {
-    return findNotNullChildByClass(KaraCode.class);
+    return findChildByClass(KaraCode.class);
   }
 
   @Override

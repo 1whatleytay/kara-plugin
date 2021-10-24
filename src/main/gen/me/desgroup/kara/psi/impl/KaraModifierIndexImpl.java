@@ -28,9 +28,9 @@ public class KaraModifierIndexImpl extends ASTWrapperPsiElement implements KaraM
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraExpression getExpression() {
-    return findNotNullChildByClass(KaraExpression.class);
+    return findChildByClass(KaraExpression.class);
   }
 
 }

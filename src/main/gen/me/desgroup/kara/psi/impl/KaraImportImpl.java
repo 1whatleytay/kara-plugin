@@ -28,9 +28,9 @@ public class KaraImportImpl extends ASTWrapperPsiElement implements KaraImport {
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraLiteralString getLiteralString() {
-    return findNotNullChildByClass(KaraLiteralString.class);
+    return findChildByClass(KaraLiteralString.class);
   }
 
 }

@@ -28,9 +28,9 @@ public class KaraAsImpl extends ASTWrapperPsiElement implements KaraAs {
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraTypename getTypename() {
-    return findNotNullChildByClass(KaraTypename.class);
+    return findChildByClass(KaraTypename.class);
   }
 
 }

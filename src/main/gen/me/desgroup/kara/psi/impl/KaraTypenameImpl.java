@@ -35,6 +35,12 @@ public class KaraTypenameImpl extends ASTWrapperPsiElement implements KaraTypena
 
   @Override
   @Nullable
+  public KaraTypenameFunction getTypenameFunction() {
+    return findChildByClass(KaraTypenameFunction.class);
+  }
+
+  @Override
+  @Nullable
   public KaraTypenameNamed getTypenameNamed() {
     return findChildByClass(KaraTypenameNamed.class);
   }

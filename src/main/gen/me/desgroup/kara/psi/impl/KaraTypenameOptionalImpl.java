@@ -28,9 +28,9 @@ public class KaraTypenameOptionalImpl extends ASTWrapperPsiElement implements Ka
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraTypename getTypename() {
-    return findNotNullChildByClass(KaraTypename.class);
+    return findChildByClass(KaraTypename.class);
   }
 
 }

@@ -11,6 +11,9 @@ public interface KaraTypename extends PsiElement {
   KaraTypenameArray getTypenameArray();
 
   @Nullable
+  KaraTypenameFunction getTypenameFunction();
+
+  @Nullable
   KaraTypenameNamed getTypenameNamed();
 
   @Nullable

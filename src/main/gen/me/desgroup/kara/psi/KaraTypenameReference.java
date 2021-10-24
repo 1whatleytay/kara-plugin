@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface KaraTypenameReference extends PsiElement {
 
-  @NotNull
+  @Nullable
   KaraTypename getTypename();
 
 }

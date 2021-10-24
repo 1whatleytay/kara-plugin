@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface KaraLiteralParens extends PsiElement {
 
-  @NotNull
+  @Nullable
   KaraExpression getExpression();
 
 }

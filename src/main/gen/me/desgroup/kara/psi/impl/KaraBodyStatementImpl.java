@@ -29,8 +29,8 @@ public class KaraBodyStatementImpl extends ASTWrapperPsiElement implements KaraB
 
   @Override
   @Nullable
-  public KaraExpression getExpression() {
-    return findChildByClass(KaraExpression.class);
+  public KaraBodyStatementReturn getBodyStatementReturn() {
+    return findChildByClass(KaraBodyStatementReturn.class);
   }
 
 }

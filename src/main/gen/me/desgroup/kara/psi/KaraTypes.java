@@ -18,6 +18,7 @@ public interface KaraTypes {
   IElementType BODY_IF = new KaraElement("BODY_IF");
   IElementType BODY_LINE = new KaraElement("BODY_LINE");
   IElementType BODY_STATEMENT = new KaraElement("BODY_STATEMENT");
+  IElementType BODY_STATEMENT_RETURN = new KaraElement("BODY_STATEMENT_RETURN");
   IElementType CODE = new KaraElement("CODE");
   IElementType EXPRESSION = new KaraElement("EXPRESSION");
   IElementType EXPRESSION_GROUPING = new KaraElement("EXPRESSION_GROUPING");
@@ -54,6 +55,7 @@ public interface KaraTypes {
   IElementType TYPENAME_ARRAY_SPEC_FIXED = new KaraElement("TYPENAME_ARRAY_SPEC_FIXED");
   IElementType TYPENAME_ARRAY_SPEC_UNBOUNDED = new KaraElement("TYPENAME_ARRAY_SPEC_UNBOUNDED");
   IElementType TYPENAME_ARRAY_SPEC_UNBOUNDED_SIZED = new KaraElement("TYPENAME_ARRAY_SPEC_UNBOUNDED_SIZED");
+  IElementType TYPENAME_FUNCTION = new KaraElement("TYPENAME_FUNCTION");
   IElementType TYPENAME_NAMED = new KaraElement("TYPENAME_NAMED");
   IElementType TYPENAME_OPTIONAL = new KaraElement("TYPENAME_OPTIONAL");
   IElementType TYPENAME_PRIMITIVE = new KaraElement("TYPENAME_PRIMITIVE");
@@ -89,6 +91,7 @@ public interface KaraTypes {
   IElementType IF_DECL = new KaraToken("IF_DECL");
   IElementType IMPORT_DECL = new KaraToken("IMPORT_DECL");
   IElementType LET_DECL = new KaraToken("LET_DECL");
+  IElementType LOCKED_DECL = new KaraToken("LOCKED_DECL");
   IElementType NAME = new KaraToken("NAME");
   IElementType NOTHING = new KaraToken("NOTHING");
   IElementType NULL = new KaraToken("NULL");
@@ -121,6 +124,7 @@ public interface KaraTypes {
   IElementType OP_SUB = new KaraToken("OP_SUB");
   IElementType OP_SUB_EQUALS = new KaraToken("OP_SUB_EQUALS");
   IElementType PRIMITIVE = new KaraToken("PRIMITIVE");
+  IElementType PTR_DECL = new KaraToken("PTR_DECL");
   IElementType QUOTE = new KaraToken("QUOTE");
   IElementType RETURN_DECL = new KaraToken("RETURN_DECL");
   IElementType STRING_ESCAPE = new KaraToken("STRING_ESCAPE");
@@ -163,6 +167,9 @@ public interface KaraTypes {
       }
       else if (type == BODY_STATEMENT) {
         return new KaraBodyStatementImpl(node);
+      }
+      else if (type == BODY_STATEMENT_RETURN) {
+        return new KaraBodyStatementReturnImpl(node);
       }
       else if (type == CODE) {
         return new KaraCodeImpl(node);
@@ -271,6 +278,9 @@ public interface KaraTypes {
       }
       else if (type == TYPENAME_ARRAY_SPEC_UNBOUNDED_SIZED) {
         return new KaraTypenameArraySpecUnboundedSizedImpl(node);
+      }
+      else if (type == TYPENAME_FUNCTION) {
+        return new KaraTypenameFunctionImpl(node);
       }
       else if (type == TYPENAME_NAMED) {
         return new KaraTypenameNamedImpl(node);

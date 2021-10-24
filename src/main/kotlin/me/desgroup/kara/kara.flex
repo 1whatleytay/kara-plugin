@@ -57,6 +57,8 @@ HARD = [\s\:\;\,\.\{\}\+\-\=\/\\\@\#\$\%\^\&\|\*\(\)\!\?\<\>\~\[\]\"\'(<<EOF>>)]
       "for" / {HARD} { return KaraTypes.FOR_DECL; }
       "let" / {HARD} { return KaraTypes.LET_DECL; }
       "var" / {HARD} { return KaraTypes.VAR_DECL; }
+      "ptr" / {HARD} { return KaraTypes.PTR_DECL; }
+      "locked" / {HARD} { return KaraTypes.LOCKED_DECL; }
 
       "true" / {HARD} { return KaraTypes.TRUE; }
       "false" / {HARD} { return KaraTypes.FALSE; }

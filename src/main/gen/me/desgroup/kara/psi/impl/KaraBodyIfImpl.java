@@ -28,15 +28,15 @@ public class KaraBodyIfImpl extends ASTWrapperPsiElement implements KaraBodyIf {
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraCode getCode() {
-    return findNotNullChildByClass(KaraCode.class);
+    return findChildByClass(KaraCode.class);
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraExpression getExpression() {
-    return findNotNullChildByClass(KaraExpression.class);
+    return findChildByClass(KaraExpression.class);
   }
 
 }

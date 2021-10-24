@@ -40,12 +40,13 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean as(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "as")) return false;
     if (!nextTokenIs(b, AS_DECL)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, AS, null);
     r = consumeToken(b, AS_DECL);
+    p = r; // pin = 1
     r = r && typename(b, l + 1);
-    exit_section_(b, m, AS, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -156,12 +157,13 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean body_block(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "body_block")) return false;
     if (!nextTokenIs(b, "<body block>", BLOCK_DECL, EXIT_DECL)) return false;
-    boolean r;
+    boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, BODY_BLOCK, "<body block>");
     r = body_block_0(b, l + 1);
+    p = r; // pin = 1
     r = r && code(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // BLOCK_DECL | EXIT_DECL
@@ -178,13 +180,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean body_for(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "body_for")) return false;
     if (!nextTokenIs(b, FOR_DECL)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, BODY_FOR, null);
     r = consumeToken(b, FOR_DECL);
-    r = r && body_for_1(b, l + 1);
-    r = r && code(b, l + 1);
-    exit_section_(b, m, BODY_FOR, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, body_for_1(b, l + 1));
+    r = p && code(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // expression?
@@ -199,13 +202,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean body_if(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "body_if")) return false;
     if (!nextTokenIs(b, IF_DECL)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, BODY_IF, null);
     r = consumeToken(b, IF_DECL);
-    r = r && expression(b, l + 1);
-    r = r && code(b, l + 1);
-    exit_section_(b, m, BODY_IF, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, expression(b, l + 1));
+    r = p && code(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -236,27 +240,36 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (RETURN_DECL expression) | BREAK_DECL | CONTINUE_DECL
+  // body-statement-return | BREAK_DECL | CONTINUE_DECL
   public static boolean body_statement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "body_statement")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, BODY_STATEMENT, "<body statement>");
-    r = body_statement_0(b, l + 1);
+    r = body_statement_return(b, l + 1);
     if (!r) r = consumeToken(b, BREAK_DECL);
     if (!r) r = consumeToken(b, CONTINUE_DECL);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // RETURN_DECL expression
-  private static boolean body_statement_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "body_statement_0")) return false;
+  /* ********************************************************** */
+  // RETURN_DECL expression?
+  public static boolean body_statement_return(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "body_statement_return")) return false;
+    if (!nextTokenIs(b, RETURN_DECL)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, RETURN_DECL);
-    r = r && expression(b, l + 1);
-    exit_section_(b, m, null, r);
+    r = r && body_statement_return_1(b, l + 1);
+    exit_section_(b, m, BODY_STATEMENT_RETURN, r);
     return r;
+  }
+
+  // expression?
+  private static boolean body_statement_return_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "body_statement_return_1")) return false;
+    expression(b, l + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -264,13 +277,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean code(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "code")) return false;
     if (!nextTokenIs(b, OPEN_BODY)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, CODE, null);
     r = consumeToken(b, OPEN_BODY);
-    r = r && body(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BODY);
-    exit_section_(b, m, CODE, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, body(b, l + 1));
+    r = p && consumeToken(b, CLOSE_BODY) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -512,12 +526,13 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean function_strict(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "function_strict")) return false;
     if (!nextTokenIs(b, FUNC_DECL)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, FUNCTION_STRICT, null);
     r = consumeToken(b, FUNC_DECL);
+    p = r; // pin = 1
     r = r && function(b, l + 1);
-    exit_section_(b, m, FUNCTION_STRICT, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -538,13 +553,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean import_$(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "import_$")) return false;
     if (!nextTokenIs(b, IMPORT_DECL)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, IMPORT, null);
     r = consumeToken(b, IMPORT_DECL);
-    r = r && import_1(b, l + 1);
-    r = r && literal_string(b, l + 1);
-    exit_section_(b, m, IMPORT, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, import_1(b, l + 1));
+    r = p && literal_string(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // (OPEN_BRACE NAME CLOSE_BRACE)?
@@ -594,13 +610,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean literal_array(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "literal_array")) return false;
     if (!nextTokenIs(b, OPEN_SQUARE)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, LITERAL_ARRAY, null);
     r = consumeToken(b, OPEN_SQUARE);
-    r = r && literal_array_1(b, l + 1);
-    r = r && consumeToken(b, CLOSE_SQUARE);
-    exit_section_(b, m, LITERAL_ARRAY, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, literal_array_1(b, l + 1));
+    r = p && consumeToken(b, CLOSE_SQUARE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // (expression COMMA?)*
@@ -650,12 +667,13 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean literal_new(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "literal_new")) return false;
     if (!nextTokenIs(b, OP_MUL)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, LITERAL_NEW, null);
     r = consumeToken(b, OP_MUL);
+    p = r; // pin = 1
     r = r && typename(b, l + 1);
-    exit_section_(b, m, LITERAL_NEW, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -675,13 +693,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean literal_parens(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "literal_parens")) return false;
     if (!nextTokenIs(b, OPEN_BRACE)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, LITERAL_PARENS, null);
     r = consumeToken(b, OPEN_BRACE);
-    r = r && expression(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BRACE);
-    exit_section_(b, m, LITERAL_PARENS, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, expression(b, l + 1));
+    r = p && consumeToken(b, CLOSE_BRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -714,13 +733,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean literal_string(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "literal_string")) return false;
     if (!nextTokenIs(b, QUOTE)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, LITERAL_STRING, null);
     r = consumeToken(b, QUOTE);
-    r = r && literal_string_1(b, l + 1);
-    r = r && consumeToken(b, QUOTE);
-    exit_section_(b, m, LITERAL_STRING, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, literal_string_1(b, l + 1));
+    r = p && consumeToken(b, QUOTE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // (STRING_PART | STRING_ESCAPE | STRING_INSERT)*
@@ -762,13 +782,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean modifier_call(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "modifier_call")) return false;
     if (!nextTokenIs(b, OPEN_BRACE)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, MODIFIER_CALL, null);
     r = consumeToken(b, OPEN_BRACE);
-    r = r && modifier_call_1(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BRACE);
-    exit_section_(b, m, MODIFIER_CALL, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, modifier_call_1(b, l + 1));
+    r = p && consumeToken(b, CLOSE_BRACE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // (modifier-call-part COMMA?)*
@@ -834,12 +855,13 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean modifier_dot(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "modifier_dot")) return false;
     if (!nextTokenIs(b, DOT)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, MODIFIER_DOT, null);
     r = consumeToken(b, DOT);
+    p = r; // pin = 1
     r = r && modifier_dot_1(b, l + 1);
-    exit_section_(b, m, MODIFIER_DOT, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // unary | NAME
@@ -856,13 +878,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean modifier_index(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "modifier_index")) return false;
     if (!nextTokenIs(b, OPEN_SQUARE)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, MODIFIER_INDEX, null);
     r = consumeToken(b, OPEN_SQUARE);
-    r = r && expression(b, l + 1);
-    r = r && consumeToken(b, CLOSE_SQUARE);
-    exit_section_(b, m, MODIFIER_INDEX, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, expression(b, l + 1));
+    r = p && consumeToken(b, CLOSE_SQUARE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -906,14 +929,15 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean ternary(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ternary")) return false;
     if (!nextTokenIs(b, OP_QUESTION)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, TERNARY, null);
     r = consumeToken(b, OP_QUESTION);
-    r = r && expression(b, l + 1);
-    r = r && consumeToken(b, COLON);
-    r = r && expression(b, l + 1);
-    exit_section_(b, m, TERNARY, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, expression(b, l + 1));
+    r = p && report_error_(b, consumeToken(b, COLON)) && r;
+    r = p && expression(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -921,12 +945,13 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean type(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type")) return false;
     if (!nextTokenIs(b, TYPE_DECL)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, TYPE_DECL, NAME);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, TYPE, null);
+    r = consumeTokens(b, 1, TYPE_DECL, NAME);
+    p = r; // pin = 1
     r = r && type_body(b, l + 1);
-    exit_section_(b, m, TYPE, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -934,12 +959,13 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean type_alias_body(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type_alias_body")) return false;
     if (!nextTokenIs(b, OP_EQUALS)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, TYPE_ALIAS_BODY, null);
     r = consumeToken(b, OP_EQUALS);
+    p = r; // pin = 1
     r = r && typename(b, l + 1);
-    exit_section_(b, m, TYPE_ALIAS_BODY, r);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
@@ -960,13 +986,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean type_declaration_body(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type_declaration_body")) return false;
     if (!nextTokenIs(b, OPEN_BODY)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, TYPE_DECLARATION_BODY, null);
     r = consumeToken(b, OPEN_BODY);
-    r = r && type_declaration_body_1(b, l + 1);
-    r = r && consumeToken(b, CLOSE_BODY);
-    exit_section_(b, m, TYPE_DECLARATION_BODY, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, type_declaration_body_1(b, l + 1));
+    r = p && consumeToken(b, CLOSE_BODY) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // (variable-loose COMMA?)*
@@ -1004,6 +1031,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
   //     | typename-array
   //     | typename-primitive
   //     | typename-named
+  //     | typename-function
   public static boolean typename(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename")) return false;
     boolean r;
@@ -1013,6 +1041,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
     if (!r) r = typename_array(b, l + 1);
     if (!r) r = typename_primitive(b, l + 1);
     if (!r) r = typename_named(b, l + 1);
+    if (!r) r = typename_function(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -1022,14 +1051,15 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean typename_array(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename_array")) return false;
     if (!nextTokenIs(b, OPEN_SQUARE)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, TYPENAME_ARRAY, null);
     r = consumeToken(b, OPEN_SQUARE);
-    r = r && typename(b, l + 1);
-    r = r && typename_array_2(b, l + 1);
-    r = r && consumeToken(b, CLOSE_SQUARE);
-    exit_section_(b, m, TYPENAME_ARRAY, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, typename(b, l + 1));
+    r = p && report_error_(b, typename_array_2(b, l + 1)) && r;
+    r = p && consumeToken(b, CLOSE_SQUARE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // typename-array-spec?
@@ -1107,6 +1137,39 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // FUNC_DECL LOCKED_DECL? PTR_DECL? OPEN_BRACE function-parameters CLOSE_BRACE typename
+  public static boolean typename_function(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typename_function")) return false;
+    if (!nextTokenIs(b, FUNC_DECL)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, TYPENAME_FUNCTION, null);
+    r = consumeToken(b, FUNC_DECL);
+    p = r; // pin = 1
+    r = r && report_error_(b, typename_function_1(b, l + 1));
+    r = p && report_error_(b, typename_function_2(b, l + 1)) && r;
+    r = p && report_error_(b, consumeToken(b, OPEN_BRACE)) && r;
+    r = p && report_error_(b, function_parameters(b, l + 1)) && r;
+    r = p && report_error_(b, consumeToken(b, CLOSE_BRACE)) && r;
+    r = p && typename(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // LOCKED_DECL?
+  private static boolean typename_function_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typename_function_1")) return false;
+    consumeToken(b, LOCKED_DECL);
+    return true;
+  }
+
+  // PTR_DECL?
+  private static boolean typename_function_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typename_function_2")) return false;
+    consumeToken(b, PTR_DECL);
+    return true;
+  }
+
+  /* ********************************************************** */
   // NAME
   public static boolean typename_named(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename_named")) return false;
@@ -1123,12 +1186,13 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean typename_optional(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename_optional")) return false;
     if (!nextTokenIs(b, "<typename optional>", OP_EXCLAM, OP_QUESTION)) return false;
-    boolean r;
+    boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, TYPENAME_OPTIONAL, "<typename optional>");
     r = typename_optional_0(b, l + 1);
+    p = r; // pin = 1
     r = r && typename(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // OP_QUESTION | OP_EXCLAM
@@ -1159,13 +1223,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean typename_reference(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename_reference")) return false;
     if (!nextTokenIs(b, "<typename reference>", OP_AND, OP_MUL)) return false;
-    boolean r;
+    boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, TYPENAME_REFERENCE, "<typename reference>");
     r = typename_reference_0(b, l + 1);
-    r = r && typename_reference_1(b, l + 1);
-    r = r && typename(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, typename_reference_1(b, l + 1));
+    r = p && typename(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // OP_AND | (OP_MUL HINT_SHARED?)
@@ -1303,12 +1368,13 @@ public class KaraParser implements PsiParser, LightPsiParser {
   public static boolean variable_strict(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "variable_strict")) return false;
     if (!nextTokenIs(b, "<variable strict>", LET_DECL, VAR_DECL)) return false;
-    boolean r;
+    boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, VARIABLE_STRICT, "<variable strict>");
     r = variable_strict_0(b, l + 1);
+    p = r; // pin = 1
     r = r && variable(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   // LET_DECL | VAR_DECL

@@ -28,9 +28,9 @@ public class KaraLiteralParensImpl extends ASTWrapperPsiElement implements KaraL
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraExpression getExpression() {
-    return findNotNullChildByClass(KaraExpression.class);
+    return findChildByClass(KaraExpression.class);
   }
 
 }

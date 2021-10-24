@@ -28,9 +28,9 @@ public class KaraTypeImpl extends ASTWrapperPsiElement implements KaraType {
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraTypeBody getTypeBody() {
-    return findNotNullChildByClass(KaraTypeBody.class);
+    return findChildByClass(KaraTypeBody.class);
   }
 
 }

@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface KaraVariableStrict extends PsiElement {
 
-  @NotNull
+  @Nullable
   KaraVariable getVariable();
 
 }

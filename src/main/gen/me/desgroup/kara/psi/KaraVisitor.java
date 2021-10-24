@@ -47,6 +47,10 @@ public class KaraVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBodyStatementReturn(@NotNull KaraBodyStatementReturn o) {
+    visitPsiElement(o);
+  }
+
   public void visitCode(@NotNull KaraCode o) {
     visitPsiElement(o);
   }
@@ -200,6 +204,10 @@ public class KaraVisitor extends PsiElementVisitor {
   }
 
   public void visitTypenameArraySpecUnboundedSized(@NotNull KaraTypenameArraySpecUnboundedSized o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTypenameFunction(@NotNull KaraTypenameFunction o) {
     visitPsiElement(o);
   }
 
