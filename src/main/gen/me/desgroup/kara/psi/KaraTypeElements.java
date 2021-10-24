@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface KaraTypeDeclarationBody extends PsiElement {
+public interface KaraTypeElements extends PsiElement {
 
-  @Nullable
-  KaraTypeElements getTypeElements();
+  @NotNull
+  List<KaraVariableLoose> getVariableLooseList();
 
 }

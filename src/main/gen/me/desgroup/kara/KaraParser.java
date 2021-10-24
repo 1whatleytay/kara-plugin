@@ -982,7 +982,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // OPEN_BODY (variable-loose COMMA?)* CLOSE_BODY
+  // OPEN_BODY type-elements CLOSE_BODY
   public static boolean type_declaration_body(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type_declaration_body")) return false;
     if (!nextTokenIs(b, OPEN_BODY)) return false;
@@ -990,37 +990,40 @@ public class KaraParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, TYPE_DECLARATION_BODY, null);
     r = consumeToken(b, OPEN_BODY);
     p = r; // pin = 1
-    r = r && report_error_(b, type_declaration_body_1(b, l + 1));
+    r = r && report_error_(b, type_elements(b, l + 1));
     r = p && consumeToken(b, CLOSE_BODY) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
+  /* ********************************************************** */
   // (variable-loose COMMA?)*
-  private static boolean type_declaration_body_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_declaration_body_1")) return false;
+  public static boolean type_elements(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_elements")) return false;
+    Marker m = enter_section_(b, l, _NONE_, TYPE_ELEMENTS, "<type elements>");
     while (true) {
       int c = current_position_(b);
-      if (!type_declaration_body_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "type_declaration_body_1", c)) break;
+      if (!type_elements_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "type_elements", c)) break;
     }
+    exit_section_(b, l, m, true, false, null);
     return true;
   }
 
   // variable-loose COMMA?
-  private static boolean type_declaration_body_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_declaration_body_1_0")) return false;
+  private static boolean type_elements_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_elements_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = variable_loose(b, l + 1);
-    r = r && type_declaration_body_1_0_1(b, l + 1);
+    r = r && type_elements_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // COMMA?
-  private static boolean type_declaration_body_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_declaration_body_1_0_1")) return false;
+  private static boolean type_elements_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_elements_0_1")) return false;
     consumeToken(b, COMMA);
     return true;
   }

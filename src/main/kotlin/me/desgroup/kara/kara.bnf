@@ -96,7 +96,8 @@ modifier-dot ::= DOT (unary | NAME) {pin=1}
 type ::= TYPE_DECL NAME type-body {pin=1}
 type-body ::= type-alias-body | type-declaration-body
 type-alias-body ::= OP_EQUALS typename {pin=1}
-type-declaration-body ::= OPEN_BODY (variable-loose COMMA?)* CLOSE_BODY {pin=1}
+type-declaration-body ::= OPEN_BODY type-elements CLOSE_BODY {pin=1}
+type-elements ::= (variable-loose COMMA?)*
 
 variable ::= NAME ((typename? OP_EQUALS expression) | typename)
 variable-loose ::= (LET_DECL | VAR_DECL)? variable {pin="LET_DECL | VAR_DECL"}

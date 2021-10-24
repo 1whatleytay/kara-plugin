@@ -179,6 +179,10 @@ public class KaraVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitTypeElements(@NotNull KaraTypeElements o) {
+    visitPsiElement(o);
+  }
+
   public void visitTypename(@NotNull KaraTypename o) {
     visitPsiElement(o);
   }

@@ -31,12 +31,14 @@
                 language="Kara"
                 implementationClass="me.desgroup.kara.KaraFormattingModelBuilder"
         />
+        <completion.contributor
+                language="Kara"
+                implementationClass="me.desgroup.kara.KaraCompletion"
+        />
         <colorSettingsPage
                 implementation="me.desgroup.kara.KaraColorSettingsPage"
         />
     </extensions>
 
-    <actions>
-        <!-- Add your actions here -->
-    </actions>
+    <actions></actions>
 </idea-plugin>

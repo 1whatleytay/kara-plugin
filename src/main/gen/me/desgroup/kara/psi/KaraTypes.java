@@ -63,6 +63,7 @@ public interface KaraTypes {
   IElementType TYPE_ALIAS_BODY = new KaraElement("TYPE_ALIAS_BODY");
   IElementType TYPE_BODY = new KaraElement("TYPE_BODY");
   IElementType TYPE_DECLARATION_BODY = new KaraElement("TYPE_DECLARATION_BODY");
+  IElementType TYPE_ELEMENTS = new KaraElement("TYPE_ELEMENTS");
   IElementType UNARY = new KaraElement("UNARY");
   IElementType VARIABLE = new KaraElement("VARIABLE");
   IElementType VARIABLE_LOOSE = new KaraElement("VARIABLE_LOOSE");
@@ -302,6 +303,9 @@ public interface KaraTypes {
       }
       else if (type == TYPE_DECLARATION_BODY) {
         return new KaraTypeDeclarationBodyImpl(node);
+      }
+      else if (type == TYPE_ELEMENTS) {
+        return new KaraTypeElementsImpl(node);
       }
       else if (type == UNARY) {
         return new KaraUnaryImpl(node);
