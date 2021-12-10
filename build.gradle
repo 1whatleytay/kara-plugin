@@ -11,11 +11,11 @@ sourceSets.main.java.srcDirs 'src/main/gen'
 
 repositories {
     mavenCentral()
-    mavenCentral()
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.0'
+    implementation 'org.snakeyaml:snakeyaml-engine:2.3'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/

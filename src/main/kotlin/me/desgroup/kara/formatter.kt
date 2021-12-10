@@ -59,11 +59,11 @@ class KaraBlock(private val astNode: ASTNode,
                 Indent.getNormalIndent()
             else
                 Indent.getNoneIndent()
-        val alignment =
-            if (alignsChildren.contains(astNode.elementType))
-                Alignment.createAlignment()
-            else
-                null
+//        val alignment =
+//            if (alignsChildren.contains(astNode.elementType))
+//                Alignment.createAlignment()
+//            else
+//                null
 
         // Don't know how to map this...
         while (child != null) {

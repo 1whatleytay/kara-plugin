@@ -1,5 +1,6 @@
 package me.desgroup.kara
 
+import KaraHeaderSource
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.project.Project
@@ -14,8 +15,10 @@ import com.intellij.psi.util.elementType
 import com.intellij.util.PlatformIcons
 import com.intellij.util.ProcessingContext
 import com.intellij.util.containers.concat
-import me.desgroup.kara.psi.*
 
+//import org.snakeyaml.engine.v2
+
+import me.desgroup.kara.psi.*
 
 import javax.swing.Icon
 
@@ -180,7 +183,66 @@ fun searchGlobals(position: PsiElement): Iterable<Suggestion> {
     return list
 }
 
-class KaraCompletionProvider : CompletionProvider<CompletionParameters>() {
+fun searchHeaders(position: PsiElement, headerSource: KaraHeaderSource): Iterable<Suggestion> {
+    val list = mutableListOf<Suggestion>()
+
+    val root = rootElement(position)
+
+    list.add(Suggestion("noHeader", null, null))
+
+    for (element in root.children) {
+        if (element.elementType == KaraTypes.IMPORT) {
+            val node = element as? KaraImport ?: continue
+
+            var child = node.firstChild
+
+            while (child != null && child.elementType != KaraTypes.NAME) {
+                child = child.nextSibling
+            }
+
+            if (child != null && child.text == "c") {
+                val literal = node.literalString ?: continue
+
+                val text = literal.text
+                val headerPath = text.substring(1, text.length - 1)
+
+                val clean = { v: String -> v.replace(Regex("\\s+"), " ") }
+
+                list.add(Suggestion("literal-has", null, null))
+
+                val data = headerSource.getHeader(headerPath, position.project)
+                if (data == null) {
+                    list.add(Suggestion("error-man", null, null))
+                    continue
+                }
+                list.add(Suggestion("got-header ${headerPath}", null, null))
+
+                val functionSuggestions = data.functions.map {
+                    val paramListText = it.parameters.map { param ->
+                        "${param.name} ${clean(param.type)}"
+                    }.joinToString(", ")
+
+                    val type = "func ($paramListText) ${clean(it.returnType)}"
+
+                    Suggestion(it.name, type, PlatformIcons.FUNCTION_ICON)
+                }
+
+                list.addAll(functionSuggestions)
+                list.addAll(data.variables.map {
+                    Suggestion(it.name, clean(it.type), PlatformIcons.VARIABLE_ICON)
+                })
+                list.addAll(data.types.map {
+                    Suggestion(it.name, null, PlatformIcons.CLASS_ICON)
+                })
+            }
+        }
+    }
+
+    return list
+}
+
+class KaraCompletionProvider(
+    private val headerSource: KaraHeaderSource) : CompletionProvider<CompletionParameters>() {
     override fun addCompletions(
         parameters: CompletionParameters,
         context: ProcessingContext,
@@ -188,11 +250,13 @@ class KaraCompletionProvider : CompletionProvider<CompletionParameters>() {
     ) {
         result.addAllElements(searchGlobals(parameters.position).map { it.toElement() })
         result.addAllElements(getScopeVariables(parameters.position).map { it.toElement() })
+        result.addAllElements(searchHeaders(parameters.position, headerSource).map { it.toElement() })
     }
 }
 
 class KaraCompletion : CompletionContributor() {
-    private val provider = KaraCompletionProvider()
+    private val headerSource = KaraHeaderSource()
+    private val provider = KaraCompletionProvider(headerSource)
 
     init {
         val namePattern = PlatformPatterns.psiElement(KaraTypes.NAME)
