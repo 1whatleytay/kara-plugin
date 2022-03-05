@@ -1,16 +1,20 @@
 import com.intellij.openapi.project.Project
-import org.apache.commons.io.IOUtils
 
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 
 import org.snakeyaml.engine.v2.api.Load
 import org.snakeyaml.engine.v2.api.LoadSettings
+
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 import com.intellij.execution.configurations.GeneralCommandLine
+
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+
+import kotlin.concurrent.thread
 
 class KaraHeaderFunctionParameter(
     val name: String,
@@ -51,138 +55,145 @@ fun getKaraExecutable(): String? {
     }
 
     throw Exception("Error: tried a bunch of paths: [${x.joinToString(", ")}]")
-
-//    return null
 }
 
 class KaraHeaderSource {
-    val cache = hashMapOf<String, KaraHeaderData>()
+    private val mutex = Mutex()
+    private val cache = hashMapOf<String, KaraHeaderData?>()
 
-//    private val karaExecutable = getKaraExecutable()
+    private suspend fun loadCache(name: String, project: Project) = coroutineScope {
+        try {
+            val basePath = project.basePath ?: return@coroutineScope
+            val projectPath = Paths.get(basePath, "project.yaml")
 
-    fun getHeader(name: String, project: Project): KaraHeaderData? {
-        val existing = cache[name]
-        if (existing != null) {
-            return existing
-        }
+            if (!projectPath.toFile().exists()) {
+                return@coroutineScope
+            }
 
-//        karaExecutable ?: throw Exception()
+            val process = GeneralCommandLine("kara", "expose", name, "--type", "c")
+                .withWorkDirectory(basePath)
+                .createProcess()
 
-//        try {
-        val basePath = project.basePath ?: return null
-        val projectPath = Paths.get(basePath, "project.yaml")
+            val loader = Load(LoadSettings.builder().build())
+            val result = loader
+                .loadAllFromInputStream(process.inputStream)
+                .toList().firstOrNull() as? Map<*, *>
+            result ?: throw Exception()
 
-        if (!projectPath.toFile().exists()) {
-            return null
-        }
+            if (result.containsKey("error")) {
+                throw Exception()
+            }
 
-        val process = GeneralCommandLine("kara", "expose", name, "--type", "c")
-            .withWorkDirectory(basePath)
-            .createProcess()
+            val root = result["root"] as List<*>
 
-//        val process = ProcessBuilder()
-//            .command(karaExecutable, "expose", name, "--type", "c")
-//            .directory(File())
-//            .start()
+            val functions = mutableListOf<KaraHeaderFunction>()
+            val variables = mutableListOf<KaraHeaderVariable>()
+            val types = mutableListOf<KaraHeaderType>()
 
-        val loader = Load(LoadSettings.builder().build())
-        val result = loader.loadAllFromInputStream(process.inputStream).toList().firstOrNull() as? Map<*, *>
-        result ?: throw Exception()
+            for (element in root) {
+                val map = element as? Map<*, *> ?: continue
 
-        if (result.containsKey("error")) {
-            throw Exception()
-        }
+                when (map["kind"]) {
+                    "function" -> {
+                        val functionName = map["name"] as String
+                        val returnType = map["return-type"] as String
 
-        val root = result["root"] as List<*>
+                        val parameters = mutableListOf<KaraHeaderFunctionParameter>()
 
-        val functions = mutableListOf<KaraHeaderFunction>()
-        val variables = mutableListOf<KaraHeaderVariable>()
-        val types = mutableListOf<KaraHeaderType>()
+                        val listParameters = map["parameters"] as List<*>
 
-        for (element in root) {
-            val map = element as? Map<*, *> ?: continue
+                        for (parameter in listParameters) {
+                            val parameterMap = parameter as? Map<*, *> ?: continue
 
-            when (map["kind"]) {
-                "function" -> {
-                    val functionName = map["name"] as String
-                    val returnType = map["return-type"] as String
+                            val parameterName = parameterMap["name"] as String
+                            val parameterType = parameterMap["type"] as String
 
-                    val parameters = mutableListOf<KaraHeaderFunctionParameter>()
+                            parameters.add(
+                                KaraHeaderFunctionParameter(
+                                    name = parameterName,
+                                    type = parameterType
+                                )
+                            )
+                        }
 
-                    val listParameters = map["parameters"] as List<*>
-
-                    for (parameter in listParameters) {
-                        val parameterMap = parameter as? Map<*, *> ?: continue
-
-                        val parameterName = parameterMap["name"] as String
-                        val parameterType = parameterMap["type"] as String
-
-                        parameters.add(
-                            KaraHeaderFunctionParameter(
-                                name = parameterName,
-                                type = parameterType
+                        functions.add(
+                            KaraHeaderFunction(
+                                name = functionName,
+                                parameters = parameters,
+                                returnType = returnType
                             )
                         )
                     }
 
-                    functions.add(
-                        KaraHeaderFunction(
-                            name = functionName,
-                            parameters = parameters,
-                            returnType = returnType
+                    "variable" -> {
+                        val variableName = map["name"] as String
+                        val variableType = map["type"] as String
+                        val mutable = map["mutable"] as Boolean
+
+                        variables.add(
+                            KaraHeaderVariable(
+                                name = variableName,
+                                type = variableType,
+                                isMutable = mutable
+                            )
                         )
-                    )
+                    }
+
+                    "type" -> {
+                        val typeName = map["name"] as String
+
+                        types.add(
+                            KaraHeaderType(
+                                name = typeName,
+                                isAlias = false,
+                            )
+                        )
+                    }
+
+                    "type-alias" -> {
+                        val typeName = map["name"] as String
+
+                        types.add(
+                            KaraHeaderType(
+                                name = typeName,
+                                isAlias = true,
+                            )
+                        )
+                    }
                 }
+            }
 
-                "variable" -> {
-                    val variableName = map["name"] as String
-                    val variableType = map["type"] as String
-                    val mutable = map["mutable"] as Boolean
+            val data = KaraHeaderData(
+                functions = functions,
+                variables = variables,
+                types = types
+            )
 
-                    variables.add(
-                        KaraHeaderVariable(
-                            name = variableName,
-                            type = variableType,
-                            isMutable = mutable
-                        )
-                    )
+            runBlocking {
+                mutex.withLock {
+                    cache[name] = data
                 }
-
-                "type" -> {
-                    val typeName = map["name"] as String
-
-                    types.add(
-                        KaraHeaderType(
-                            name = typeName,
-                            isAlias = false,
-                        )
-                    )
-                }
-
-                "type-alias" -> {
-                    val typeName = map["name"] as String
-
-                    types.add(
-                        KaraHeaderType(
-                            name = typeName,
-                            isAlias = true,
-                        )
-                    )
+            }
+        } catch (e: Exception) {
+            runBlocking {
+                mutex.withLock {
+                    cache[name] = null
                 }
             }
         }
+    }
 
-        val data = KaraHeaderData(
-            functions = functions,
-            variables = variables,
-            types = types
-        )
+    fun getHeader(name: String, project: Project): KaraHeaderData? {
+        if (cache.containsKey(name)) { // inefficient
+            return cache[name]
+        }
 
-        cache[name] = data
+        thread {
+            runBlocking {
+                loadCache(name, project)
+            }
+        }
 
-        return data
-//        } catch (e: Exception) {
-//            return null
-//        }
+        return null
     }
 }

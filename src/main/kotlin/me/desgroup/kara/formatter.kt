@@ -13,6 +13,16 @@ import me.desgroup.kara.psi.KaraTypes
 // useless, copied from rust but I'm leaving it here for now until I get everything right...
 data class KaraFormatContext(private val alignment: Alignment?)
 
+val alignsChildren = setOf(
+    KaraTypes.BODY,
+    KaraTypes.TYPE_ELEMENTS,
+)
+
+val indentChildren = setOf(
+    KaraTypes.CODE, KaraTypes.BODY,
+    KaraTypes.TYPE_DECLARATION_BODY, KaraTypes.TYPE_ELEMENTS
+)
+
 class KaraBlock(private val astNode: ASTNode,
                 private val myWrap: Wrap?,
                 private val myAlignment: Alignment?,
@@ -34,7 +44,7 @@ class KaraBlock(private val astNode: ASTNode,
 
     override fun getChildAttributes(newChildIndex: Int): ChildAttributes
         = ChildAttributes(
-        if (setOf(KaraTypes.CODE, KaraTypes.BODY).contains(astNode.elementType))
+        if (indentChildren.contains(astNode.elementType))
             Indent.getNormalIndent()
         else
             Indent.getNoneIndent(),
@@ -48,11 +58,6 @@ class KaraBlock(private val astNode: ASTNode,
     private fun buildChildren(): MutableList<Block> {
         val blocks = mutableListOf<Block>()
         var child = astNode.firstChildNode
-
-        val alignsChildren = setOf(
-            KaraTypes.BODY,
-            KaraTypes.TYPE_ELEMENTS,
-        )
 
         val indent =
             if (alignsChildren.contains(astNode.elementType))
@@ -102,8 +107,6 @@ class KaraFormattingModelBuilder : FormattingModelBuilder {
                 KaraBlock(
                     formattingContext.node,
                     null,
-//                    null,
-//                    Wrap.createWrap(WrapType.NONE, false),
                     null,
                     Indent.getNoneIndent(),
                     createSpaceBuilder(style),

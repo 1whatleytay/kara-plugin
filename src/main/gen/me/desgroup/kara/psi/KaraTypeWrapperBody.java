@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface KaraTypeBody extends PsiElement {
+public interface KaraTypeWrapperBody extends PsiElement {
 
-  @Nullable
-  KaraTypeAliasBody getTypeAliasBody();
-
-  @Nullable
-  KaraTypeWrapperBody getTypeWrapperBody();
+  @NotNull
+  KaraTypeDeclarationBody getTypeDeclarationBody();
 
 }

@@ -969,14 +969,14 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // type-alias-body | type-declaration-body
+  // type-alias-body | type-wrapper-body
   public static boolean type_body(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type_body")) return false;
     if (!nextTokenIs(b, "<type body>", OPEN_BODY, OP_EQUALS)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, TYPE_BODY, "<type body>");
     r = type_alias_body(b, l + 1);
-    if (!r) r = type_declaration_body(b, l + 1);
+    if (!r) r = type_wrapper_body(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -1026,6 +1026,18 @@ public class KaraParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "type_elements_0_1")) return false;
     consumeToken(b, COMMA);
     return true;
+  }
+
+  /* ********************************************************** */
+  // type-declaration-body
+  public static boolean type_wrapper_body(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_wrapper_body")) return false;
+    if (!nextTokenIs(b, OPEN_BODY)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = type_declaration_body(b, l + 1);
+    exit_section_(b, m, TYPE_WRAPPER_BODY, r);
+    return r;
   }
 
   /* ********************************************************** */

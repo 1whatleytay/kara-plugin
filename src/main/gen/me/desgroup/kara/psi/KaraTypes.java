@@ -66,6 +66,7 @@ public interface KaraTypes {
   IElementType TYPE_BODY = new KaraElement("TYPE_BODY");
   IElementType TYPE_DECLARATION_BODY = new KaraElement("TYPE_DECLARATION_BODY");
   IElementType TYPE_ELEMENTS = new KaraElement("TYPE_ELEMENTS");
+  IElementType TYPE_WRAPPER_BODY = new KaraElement("TYPE_WRAPPER_BODY");
   IElementType UNARY = new KaraElement("UNARY");
   IElementType VARIABLE = new KaraElement("VARIABLE");
   IElementType VARIABLE_LOOSE = new KaraElement("VARIABLE_LOOSE");
@@ -315,6 +316,9 @@ public interface KaraTypes {
       }
       else if (type == TYPE_ELEMENTS) {
         return new KaraTypeElementsImpl(node);
+      }
+      else if (type == TYPE_WRAPPER_BODY) {
+        return new KaraTypeWrapperBodyImpl(node);
       }
       else if (type == UNARY) {
         return new KaraUnaryImpl(node);
