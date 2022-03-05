@@ -56,10 +56,12 @@ public interface KaraTypes {
   IElementType TYPENAME_ARRAY_SPEC_UNBOUNDED = new KaraElement("TYPENAME_ARRAY_SPEC_UNBOUNDED");
   IElementType TYPENAME_ARRAY_SPEC_UNBOUNDED_SIZED = new KaraElement("TYPENAME_ARRAY_SPEC_UNBOUNDED_SIZED");
   IElementType TYPENAME_FUNCTION = new KaraElement("TYPENAME_FUNCTION");
+  IElementType TYPENAME_FUNCTION_PARAMETERS = new KaraElement("TYPENAME_FUNCTION_PARAMETERS");
   IElementType TYPENAME_NAMED = new KaraElement("TYPENAME_NAMED");
   IElementType TYPENAME_OPTIONAL = new KaraElement("TYPENAME_OPTIONAL");
   IElementType TYPENAME_PRIMITIVE = new KaraElement("TYPENAME_PRIMITIVE");
   IElementType TYPENAME_REFERENCE = new KaraElement("TYPENAME_REFERENCE");
+  IElementType TYPENAME_REFERENCE_ATTRIBUTE = new KaraElement("TYPENAME_REFERENCE_ATTRIBUTE");
   IElementType TYPE_ALIAS_BODY = new KaraElement("TYPE_ALIAS_BODY");
   IElementType TYPE_BODY = new KaraElement("TYPE_BODY");
   IElementType TYPE_DECLARATION_BODY = new KaraElement("TYPE_DECLARATION_BODY");
@@ -93,6 +95,7 @@ public interface KaraTypes {
   IElementType IMPORT_DECL = new KaraToken("IMPORT_DECL");
   IElementType LET_DECL = new KaraToken("LET_DECL");
   IElementType LOCKED_DECL = new KaraToken("LOCKED_DECL");
+  IElementType MOVE_DECL = new KaraToken("MOVE_DECL");
   IElementType NAME = new KaraToken("NAME");
   IElementType NOTHING = new KaraToken("NOTHING");
   IElementType NULL = new KaraToken("NULL");
@@ -283,6 +286,9 @@ public interface KaraTypes {
       else if (type == TYPENAME_FUNCTION) {
         return new KaraTypenameFunctionImpl(node);
       }
+      else if (type == TYPENAME_FUNCTION_PARAMETERS) {
+        return new KaraTypenameFunctionParametersImpl(node);
+      }
       else if (type == TYPENAME_NAMED) {
         return new KaraTypenameNamedImpl(node);
       }
@@ -294,6 +300,9 @@ public interface KaraTypes {
       }
       else if (type == TYPENAME_REFERENCE) {
         return new KaraTypenameReferenceImpl(node);
+      }
+      else if (type == TYPENAME_REFERENCE_ATTRIBUTE) {
+        return new KaraTypenameReferenceAttributeImpl(node);
       }
       else if (type == TYPE_ALIAS_BODY) {
         return new KaraTypeAliasBodyImpl(node);

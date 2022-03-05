@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface KaraTypenameFunction extends PsiElement {
+public interface KaraTypenameFunctionParameters extends PsiElement {
 
-  @Nullable
-  KaraTypename getTypename();
-
-  @Nullable
-  KaraTypenameFunctionParameters getTypenameFunctionParameters();
+  @NotNull
+  List<KaraTypename> getTypenameList();
 
 }

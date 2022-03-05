@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
+
 import me.desgroup.kara.psi.KaraTypes
 
 val comments = TokenSet.create(KaraTypes.COMMENT)

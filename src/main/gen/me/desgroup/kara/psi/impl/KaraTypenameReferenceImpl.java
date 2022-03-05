@@ -33,4 +33,10 @@ public class KaraTypenameReferenceImpl extends ASTWrapperPsiElement implements K
     return findChildByClass(KaraTypename.class);
   }
 
+  @Override
+  @NotNull
+  public List<KaraTypenameReferenceAttribute> getTypenameReferenceAttributeList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, KaraTypenameReferenceAttribute.class);
+  }
+
 }

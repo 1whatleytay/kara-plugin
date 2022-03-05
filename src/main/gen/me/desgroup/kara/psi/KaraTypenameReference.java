@@ -10,4 +10,7 @@ public interface KaraTypenameReference extends PsiElement {
   @Nullable
   KaraTypename getTypename();
 
+  @NotNull
+  List<KaraTypenameReferenceAttribute> getTypenameReferenceAttributeList();
+
 }

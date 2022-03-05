@@ -1,6 +1,5 @@
 package me.desgroup.kara
 
-import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
@@ -69,7 +68,9 @@ class KaraSyntaxHighlighter : SyntaxHighlighterBase() {
             KaraTypes.IMPORT_DECL,
             KaraTypes.AS_DECL,
             KaraTypes.IF_DECL,
-            KaraTypes.FOR_DECL ->
+            KaraTypes.FOR_DECL,
+            KaraTypes.MOVE_DECL,
+            KaraTypes.PTR_DECL ->
                 arrayOf(KaraHighlighterKeys.keyword)
 
             KaraTypes.COMMENT -> arrayOf(KaraHighlighterKeys.comment)
@@ -135,6 +136,7 @@ class KaraSyntaxHighlighter : SyntaxHighlighterBase() {
                 arrayOf(KaraHighlighterKeys.keyword)
 
             TokenType.BAD_CHARACTER -> arrayOf(KaraHighlighterKeys.badCharacter)
+
             else -> arrayOf()
         }
     }

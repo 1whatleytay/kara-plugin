@@ -215,6 +215,10 @@ public class KaraVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitTypenameFunctionParameters(@NotNull KaraTypenameFunctionParameters o) {
+    visitPsiElement(o);
+  }
+
   public void visitTypenameNamed(@NotNull KaraTypenameNamed o) {
     visitPsiElement(o);
   }
@@ -228,6 +232,10 @@ public class KaraVisitor extends PsiElementVisitor {
   }
 
   public void visitTypenameReference(@NotNull KaraTypenameReference o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTypenameReferenceAttribute(@NotNull KaraTypenameReferenceAttribute o) {
     visitPsiElement(o);
   }
 

@@ -1140,7 +1140,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FUNC_DECL LOCKED_DECL? PTR_DECL? OPEN_BRACE function-parameters CLOSE_BRACE typename
+  // FUNC_DECL LOCKED_DECL? PTR_DECL? typename-function-parameters typename
   public static boolean typename_function(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename_function")) return false;
     if (!nextTokenIs(b, FUNC_DECL)) return false;
@@ -1150,9 +1150,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
     p = r; // pin = 1
     r = r && report_error_(b, typename_function_1(b, l + 1));
     r = p && report_error_(b, typename_function_2(b, l + 1)) && r;
-    r = p && report_error_(b, consumeToken(b, OPEN_BRACE)) && r;
-    r = p && report_error_(b, function_parameters(b, l + 1)) && r;
-    r = p && report_error_(b, consumeToken(b, CLOSE_BRACE)) && r;
+    r = p && report_error_(b, typename_function_parameters(b, l + 1)) && r;
     r = p && typename(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
@@ -1169,6 +1167,49 @@ public class KaraParser implements PsiParser, LightPsiParser {
   private static boolean typename_function_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename_function_2")) return false;
     consumeToken(b, PTR_DECL);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // OPEN_BRACE (typename COMMA?)* CLOSE_BRACE
+  public static boolean typename_function_parameters(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typename_function_parameters")) return false;
+    if (!nextTokenIs(b, OPEN_BRACE)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, OPEN_BRACE);
+    r = r && typename_function_parameters_1(b, l + 1);
+    r = r && consumeToken(b, CLOSE_BRACE);
+    exit_section_(b, m, TYPENAME_FUNCTION_PARAMETERS, r);
+    return r;
+  }
+
+  // (typename COMMA?)*
+  private static boolean typename_function_parameters_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typename_function_parameters_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!typename_function_parameters_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "typename_function_parameters_1", c)) break;
+    }
+    return true;
+  }
+
+  // typename COMMA?
+  private static boolean typename_function_parameters_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typename_function_parameters_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = typename(b, l + 1);
+    r = r && typename_function_parameters_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // COMMA?
+  private static boolean typename_function_parameters_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typename_function_parameters_1_0_1")) return false;
+    consumeToken(b, COMMA);
     return true;
   }
 
@@ -1222,7 +1263,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (OP_AND | (OP_MUL HINT_SHARED?)) (LET_DECL | VAR_DECL)? typename
+  // (OP_AND | OP_MUL) typename-reference-attribute* typename
   public static boolean typename_reference(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename_reference")) return false;
     if (!nextTokenIs(b, "<typename reference>", OP_AND, OP_MUL)) return false;
@@ -1236,53 +1277,42 @@ public class KaraParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // OP_AND | (OP_MUL HINT_SHARED?)
+  // OP_AND | OP_MUL
   private static boolean typename_reference_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename_reference_0")) return false;
     boolean r;
-    Marker m = enter_section_(b);
     r = consumeToken(b, OP_AND);
-    if (!r) r = typename_reference_0_1(b, l + 1);
-    exit_section_(b, m, null, r);
+    if (!r) r = consumeToken(b, OP_MUL);
     return r;
   }
 
-  // OP_MUL HINT_SHARED?
-  private static boolean typename_reference_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "typename_reference_0_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, OP_MUL);
-    r = r && typename_reference_0_1_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // HINT_SHARED?
-  private static boolean typename_reference_0_1_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "typename_reference_0_1_1")) return false;
-    consumeToken(b, HINT_SHARED);
-    return true;
-  }
-
-  // (LET_DECL | VAR_DECL)?
+  // typename-reference-attribute*
   private static boolean typename_reference_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typename_reference_1")) return false;
-    typename_reference_1_0(b, l + 1);
+    while (true) {
+      int c = current_position_(b);
+      if (!typename_reference_attribute(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "typename_reference_1", c)) break;
+    }
     return true;
   }
 
-  // LET_DECL | VAR_DECL
-  private static boolean typename_reference_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "typename_reference_1_0")) return false;
+  /* ********************************************************** */
+  // HINT_SHARED | LET_DECL | VAR_DECL | PTR_DECL
+  public static boolean typename_reference_attribute(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "typename_reference_attribute")) return false;
     boolean r;
-    r = consumeToken(b, LET_DECL);
+    Marker m = enter_section_(b, l, _NONE_, TYPENAME_REFERENCE_ATTRIBUTE, "<typename reference attribute>");
+    r = consumeToken(b, HINT_SHARED);
+    if (!r) r = consumeToken(b, LET_DECL);
     if (!r) r = consumeToken(b, VAR_DECL);
+    if (!r) r = consumeToken(b, PTR_DECL);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   /* ********************************************************** */
-  // OP_EXCLAM | OP_SUB | OP_AND | OP_AT
+  // OP_EXCLAM | OP_SUB | OP_AND | OP_AT | MOVE_DECL
   public static boolean unary(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "unary")) return false;
     boolean r;
@@ -1291,6 +1321,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, OP_SUB);
     if (!r) r = consumeToken(b, OP_AND);
     if (!r) r = consumeToken(b, OP_AT);
+    if (!r) r = consumeToken(b, MOVE_DECL);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
