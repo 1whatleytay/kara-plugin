@@ -379,7 +379,7 @@ public class KaraParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // NAME function-parameters? typename? (EXTERNAL VARARGS?)? function-body
+  // NAME function-parameters? typename? ((EXTERNAL VARARGS?) | function-body)
   public static boolean function(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "function")) return false;
     if (!nextTokenIs(b, NAME)) return false;
@@ -389,7 +389,6 @@ public class KaraParser implements PsiParser, LightPsiParser {
     r = r && function_1(b, l + 1);
     r = r && function_2(b, l + 1);
     r = r && function_3(b, l + 1);
-    r = r && function_body(b, l + 1);
     exit_section_(b, m, FUNCTION, r);
     return r;
   }
@@ -408,11 +407,15 @@ public class KaraParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (EXTERNAL VARARGS?)?
+  // (EXTERNAL VARARGS?) | function-body
   private static boolean function_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "function_3")) return false;
-    function_3_0(b, l + 1);
-    return true;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = function_3_0(b, l + 1);
+    if (!r) r = function_body(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
   }
 
   // EXTERNAL VARARGS?

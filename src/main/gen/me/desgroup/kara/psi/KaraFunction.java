@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface KaraFunction extends PsiElement {
 
-  @NotNull
+  @Nullable
   KaraFunctionBody getFunctionBody();
 
   @Nullable

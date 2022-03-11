@@ -28,9 +28,9 @@ public class KaraFunctionImpl extends ASTWrapperPsiElement implements KaraFuncti
   }
 
   @Override
-  @NotNull
+  @Nullable
   public KaraFunctionBody getFunctionBody() {
-    return findNotNullChildByClass(KaraFunctionBody.class);
+    return findChildByClass(KaraFunctionBody.class);
   }
 
   @Override

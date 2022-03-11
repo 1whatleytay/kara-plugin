@@ -196,11 +196,11 @@ class KaraLexer implements FlexLexer {
     "\2\0\2\64\2\0\1\65\1\0\1\65\1\0\2\66"+
     "\2\67\1\0\2\70\2\71\2\0\2\72\1\0\2\73"+
     "\7\0\2\74\4\0\2\75\2\76\3\0\2\77\2\100"+
-    "\6\0\2\101\2\0\2\102\2\103\2\104\2\105\1\106"+
-    "\1\107\2\110\1\0\2\111";
+    "\6\0\2\101\2\0\2\102\2\103\2\104\2\105\2\0"+
+    "\2\106\1\0\2\107\2\110\2\111";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[254];
+    int [] result = new int[258];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -255,11 +255,12 @@ class KaraLexer implements FlexLexer {
     "\0\u244b\0\u2484\0\u24bd\0\u20f4\0\u24f6\0\u212d\0\u252f\0\u2568"+
     "\0\u25a1\0\u25da\0\u2283\0\u2613\0\u22bc\0\u264c\0\u2685\0\u26be"+
     "\0\u26f7\0\u2730\0\u2769\0\u27a2\0\u252f\0\u27db\0\u2814\0\u284d"+
-    "\0\u264c\0\u2886\0\u2685\0\u28bf\0\u26be\0\u28f8\0\u26f7\0\u023a"+
-    "\0\u023a\0\u2931\0\u27db\0\u296a\0\u29a3\0\u296a";
+    "\0\u264c\0\u2886\0\u2685\0\u28bf\0\u26be\0\u28f8\0\u26f7\0\u2931"+
+    "\0\u296a\0\u29a3\0\u27db\0\u29dc\0\u2a15\0\u2931\0\u2a4e\0\u296a"+
+    "\0\u2a87\0\u29dc";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[254];
+    int [] result = new int[258];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -501,13 +502,17 @@ class KaraLexer implements FlexLexer {
     "\2\0\3\360\1\0\6\362\25\0\25\362\1\0\2\362"+
     "\2\0\3\362\1\0\6\364\25\0\25\364\1\0\2\364"+
     "\2\0\3\364\1\0\6\366\25\0\25\366\1\0\2\366"+
-    "\2\0\3\366\1\0\6\372\25\0\25\372\1\0\2\372"+
-    "\2\0\3\372\1\0\6\375\25\100\25\375\1\100\2\375"+
-    "\2\100\2\376\1\375\1\0\6\375\25\0\25\375\1\0"+
-    "\2\375\2\0\3\375";
+    "\2\0\3\366\1\0\6\375\25\100\25\375\1\100\2\375"+
+    "\2\100\2\376\1\375\1\0\6\377\25\100\25\377\1\100"+
+    "\2\377\2\100\2\u0100\1\377\1\0\6\372\25\0\25\372"+
+    "\1\0\2\372\2\0\3\372\1\0\6\u0101\25\100\25\u0101"+
+    "\1\100\2\u0101\2\100\2\u0102\1\u0101\1\0\6\375\25\0"+
+    "\25\375\1\0\2\375\2\0\3\375\1\0\6\377\25\0"+
+    "\25\377\1\0\2\377\2\0\3\377\1\0\6\u0101\25\0"+
+    "\25\u0101\1\0\2\u0101\2\0\3\u0101";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[10716];
+    int [] result = new int[10944];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -553,10 +558,10 @@ class KaraLexer implements FlexLexer {
     "\12\0\2\1\1\0\2\1\2\0\2\1\2\0\1\1"+
     "\1\0\1\1\1\0\4\1\1\0\4\1\2\0\2\1"+
     "\1\0\2\1\7\0\2\1\4\0\4\1\3\0\4\1"+
-    "\6\0\2\1\2\0\14\1\1\0\2\1";
+    "\6\0\2\1\2\0\10\1\2\0\2\1\1\0\6\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[254];
+    int [] result = new int[258];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -1354,20 +1359,26 @@ char quote = ' ';
             // fall through
           case 142: break;
           case 70: 
-            { return KaraTypes.VARARGS;
+            // lookahead expression with fixed base length
+            zzMarkedPos = Character.offsetByCodePoints
+                (zzBufferL/*, zzStartRead, zzEndRead - zzStartRead*/, zzStartRead, 7);
+            { return KaraTypes.NOTHING;
             } 
             // fall through
           case 143: break;
           case 71: 
-            { return KaraTypes.EXTERNAL;
+            // lookahead expression with fixed base length
+            zzMarkedPos = Character.offsetByCodePoints
+                (zzBufferL/*, zzStartRead, zzEndRead - zzStartRead*/, zzStartRead, 7);
+            { return KaraTypes.VARARGS;
             } 
             // fall through
           case 144: break;
           case 72: 
             // lookahead expression with fixed base length
             zzMarkedPos = Character.offsetByCodePoints
-                (zzBufferL/*, zzStartRead, zzEndRead - zzStartRead*/, zzStartRead, 7);
-            { return KaraTypes.NOTHING;
+                (zzBufferL/*, zzStartRead, zzEndRead - zzStartRead*/, zzStartRead, 8);
+            { return KaraTypes.EXTERNAL;
             } 
             // fall through
           case 145: break;

@@ -106,8 +106,8 @@ HARD = [\s\:\;\,\.\{\}\+\-\=\/\\\@\#\$\%\^\&\|\*\(\)\!\?\<\>\~\[\]\"\'(<<EOF>>)]
       "%=" { return KaraTypes.OP_MOD_EQUALS; }
       "\\" { return KaraTypes.BACKSLASH; }
 
-      "external" { return KaraTypes.EXTERNAL; }
-      "varargs" { return KaraTypes.VARARGS; }
+      "external" / {HARD} { return KaraTypes.EXTERNAL; }
+      "varargs" / {HARD} { return KaraTypes.VARARGS; }
 
       "\'" { pushState(SINGLE_STRING); return KaraTypes.QUOTE; }
       "\"" { pushState(DOUBLE_STRING); return KaraTypes.QUOTE; }

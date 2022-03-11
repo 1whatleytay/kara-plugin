@@ -106,7 +106,7 @@ variable ::= NAME ((typename? OP_EQUALS expression) | typename)
 variable-loose ::= (LET_DECL | VAR_DECL)? variable {pin="LET_DECL | VAR_DECL"}
 variable-strict ::= (LET_DECL | VAR_DECL) variable {pin=1}
 
-function ::= NAME function-parameters? typename? (EXTERNAL VARARGS?)? function-body
+function ::= NAME function-parameters? typename? ((EXTERNAL VARARGS?) | function-body)
 function-parameters ::= OPEN_BRACE (variable-loose COMMA?)* CLOSE_BRACE
 function-body ::= function-value-body | function-declaration-body
 function-value-body ::= FUNC_DASH expression
